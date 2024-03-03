@@ -1,0 +1,20 @@
+langchain
+langchain-community
+openai
+pymupdf
+pydantic
+pymilvus
+tiktoken
+nltk
+redis
+retry
+stringcase
+transformers
+# streamlit
+# gTTS
+# botocore
+# xinference
+rsa
+cryptography
+neo4j-utils
+seaborn
