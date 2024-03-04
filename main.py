@@ -18,23 +18,13 @@ prompt_engine = BioCypherPromptEngine(
         )
 
 
-# cypher_query = prompt_engine.generate_query(user_question)
+cypher_query = prompt_engine.generate_query(user_question)
 
 # query_func = agent.get_query_results
-# print(cypher_query)
+print("\n\nLLM query:\n")
+print(cypher_query)
 
 # //////////////////////////////////////////////////////////
-
-# results = query_func(user_question, n_results) # on generate_response
-# response = [
-# (
-#     result.page_content,
-#     result.metadata,
-# )
-# for result in results
-# ]
-# return response
-# print(results)
 
 
 # Wanted
@@ -56,4 +46,7 @@ prompt_engine = BioCypherPromptEngine(
 # (match &self ($prop (Entity Compound) $val)
 #     ($prop (Entity Compound) $val))
 
+
+metta = MeTTa()
+print("\n\nMeTTa runtime:\n")
 print(metta.import_file(metta_file))
