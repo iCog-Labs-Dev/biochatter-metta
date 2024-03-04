@@ -544,7 +544,7 @@ class BioCypherPromptEngine:
         print("%"*20)
 
         print(f"Selected Entities: {entities}")
-        # print(f"Selected Relationships: {list(relationships.keys())}")
+        print(f"Selected Relationships: {list(relationships.keys())}")
         print(f"Selected Properties: {properties}")
 
             # f"Generate a database query in {query_language} that answers "
