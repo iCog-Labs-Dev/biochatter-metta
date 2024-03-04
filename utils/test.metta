@@ -1,0 +1,27 @@
+(gene ENSG00000290825)
+(gene_type (gene ENSG00000290825) lncRNA)
+(chr (gene ENSG00000290825) chr1)
+(start (gene ENSG00000290825) 11869)
+(end (gene ENSG00000290825) 14409)
+(gene_name (gene ENSG00000290825) DDX11L2)
+(synonyms (gene ENSG00000290825) (DEAD/H-box_helicase_11_like_1_(pseudogene) DDX11L1 DEAD/H_(Asp-Glu-Ala-Asp/His)_box_polypeptide_11_like_1 DEAD/H_box_polypeptide_11_like_1 HGNC:37102 DEAD/H_(Asp-Glu-Ala-Asp/His)_box_helicase_11_like_1))
+(gene ENSG00000223972)
+(gene_type (gene ENSG00000223972) transcribed_unprocessed_pseudogene)
+(chr (gene ENSG00000223972) chr1)
+(start (gene ENSG00000223972) 12010)
+(end (gene ENSG00000223972) 13670)
+(gene_name (gene ENSG00000223972) DDX11L1)
+(synonyms (gene ENSG00000223972) (DEAD/H-box_helicase_11_like_1_(pseudogene) DDX11L1 DEAD/H_(Asp-Glu-Ala-Asp/His)_box_polypeptide_11_like_1 DEAD/H_box_polypeptide_11_like_1 HGNC:37102 DEAD/H_(Asp-Glu-Ala-Asp/His)_box_helicase_11_like_1))
+(gene ENSG00000227232)
+(gene_type (gene ENSG00000227232) unprocessed_pseudogene)
+(chr (gene ENSG00000227232) chr1)
+(start (gene ENSG00000227232) 14404)
+(end (gene ENSG00000227232) 29570)
+(gene_name (gene ENSG00000227232) WASH7P)
+(synonyms (gene ENSG00000227232) (WASH7P WAS_protein_family_homolog_5_pseudogene FAM39F HGNC:38034 family_with_sequence_similarity_39,_member_F WASP_family_homolog_7,_pseudogene WAS_protein_family_homolog_7,_pseudogene WASH5P))
+
+
+;Get properties of gene ENSG00000290825
+!(match &self ($prop (gene ENSG00000290825) $val)
+    ($prop $val))
+    
