@@ -8,7 +8,7 @@ prompts = BioCypherPromptEngine(
 model_name = "gpt-3.5-turbo"
 schema_config_or_info_dict = "./utils/schema_config.yaml"
 user_question = "Give me the query to get the name for the compund with CID CID2499366 VALUE "
-metta_file = "./utils/test.metta"
+metta_file = "./utils/nodes.metta"
 
 
 prompt_engine = BioCypherPromptEngine(
