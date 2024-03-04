@@ -2,7 +2,7 @@ from typing import Optional
 import yaml
 import json
 import os
-from ._misc import sentencecase_to_pascalcase, ensure_iterable, sentencecase_to_snakecase
+from ._misc import ensure_iterable, sentencecase_to_snakecase, sentencecase_to_pascalcase
 from .llm_connect import Conversation, GptConversation
 
 
@@ -87,7 +87,7 @@ class BioCypherPromptEngine:
                         value["represented_as"] == "node"
                         and not name_indicates_relationship
                     ):
-                        self.entities[sentencecase_to_pascalcase(key)] = value
+                        self.entities[key] = value
                     elif (
                         value["represented_as"] == "node"
                         and name_indicates_relationship
@@ -108,7 +108,7 @@ class BioCypherPromptEngine:
                 if value.get("is_relationship", None) == False:
                     self.entities[sentencecase_to_snakecase(key)] = value
                 elif value.get("is_relationship", None) == True:
-                    value = self._capitalise_source_and_target(value)
+                    # value = self._capitalise_source_and_target(value)
                     self.relationships[sentencecase_to_snakecase(key)] = value
 
         self.question = ""
@@ -267,7 +267,7 @@ class BioCypherPromptEngine:
             for entity in result:
                 entity = entity.strip()
                 if entity in self.entities:
-                    self.selected_entities.append(entity)
+                    self.selected_entities.append(entity.lower())
 
         return bool(result)
 
@@ -363,6 +363,8 @@ class BioCypherPromptEngine:
             rels = json.dumps(selected_rels)
         else:
             rels = json.dumps(self.relationships)
+
+        print('All valid relationships: ', rels)
 
         msg = (
             "You have access to a knowledge graph that contains "
@@ -542,7 +544,7 @@ class BioCypherPromptEngine:
         print("%"*20)
 
         print(f"Selected Entities: {entities}")
-        print(f"Selected Relationships: {list(relationships.keys())}")
+        # print(f"Selected Relationships: {list(relationships.keys())}")
         print(f"Selected Properties: {properties}")
 
             # f"Generate a database query in {query_language} that answers "
