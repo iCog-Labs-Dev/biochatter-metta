@@ -2,7 +2,7 @@ from typing import Optional
 import yaml
 import json
 import os
-from ._misc import sentencecase_to_pascalcase, ensure_iterable
+from ._misc import sentencecase_to_pascalcase, ensure_iterable, sentencecase_to_snakecase
 from .llm_connect import Conversation, GptConversation
 
 
@@ -92,11 +92,11 @@ class BioCypherPromptEngine:
                         value["represented_as"] == "node"
                         and name_indicates_relationship
                     ):
-                        self.relationships[sentencecase_to_pascalcase(key)] = (
+                        self.relationships[sentencecase_to_snakecase(key)] = (
                             value
                         )
                     elif value["represented_as"] == "edge":
-                        self.relationships[sentencecase_to_pascalcase(key)] = (
+                        self.relationships[sentencecase_to_snakecase(key)] = (
                             value
                         )
         else:
@@ -106,10 +106,10 @@ class BioCypherPromptEngine:
                 if value.get("present_in_knowledge_graph", None) == False:
                     continue
                 if value.get("is_relationship", None) == False:
-                    self.entities[sentencecase_to_pascalcase(key)] = value
+                    self.entities[sentencecase_to_snakecase(key)] = value
                 elif value.get("is_relationship", None) == True:
                     value = self._capitalise_source_and_target(value)
-                    self.relationships[sentencecase_to_pascalcase(key)] = value
+                    self.relationships[sentencecase_to_snakecase(key)] = value
 
         self.question = ""
         self.selected_entities = []
@@ -517,9 +517,48 @@ class BioCypherPromptEngine:
         Returns:
             A database query that could answer the user's question.
         """
+        # ============================================================
+        print("-"*20)
+        print(f"All Entities: {self.entities}")
+        print("-"*20)
+        print(f"All Relationships: {self.relationships}")
+        print("-"*20)
+        e_props = {}
+        for entity in self.selected_entities:
+            if self.entities[entity].get("properties"):
+                e_props[entity] = list(
+                    self.entities[entity]["properties"].keys()
+                )
+        print(f"All Entity Props: {e_props}")
+        print("-"*20)
+        r_props = {}
+        for relationship in self.selected_relationships:
+            if self.relationships[relationship].get("properties"):
+                r_props[relationship] = list(
+                    self.relationships[relationship]["properties"].keys()
+                )
+        print(f"All Relationship Props: {r_props}")
+    
+        print("%"*20)
+
+        print(f"Selected Entities: {entities}")
+        print(f"Selected Relationships: {list(relationships.keys())}")
+        print(f"Selected Properties: {properties}")
+
+            # f"Generate a database query in {query_language} that answers "
+            # f"the user's question. "
         msg = (
-            f"Generate a database query in {query_language} that answers "
-            f"the user's question. "
+            f"Generate Scheme expressions that answers the user's question."
+            f"Distinguish questions and statements."
+            f"Universal quantification should follow the pattern -"
+            f"'All/any X are Y' should be represented as (= (Y $x) (X $x))"
+            f"'All/any X Predicate Y' should be represented as (= (Predicate Y $x) (X $x))"
+            f"'All/any X are not Y' should be represented as (= (Y $x) (not (X $x)))"
+            f"Is-a expressions should follow the pattern -"
+            f"'X is Y' should be represented as (= (Y X) True)"
+            f"'X is not Y' should be represented as (= (Y X) False)"
+            f"All questions should follow the pattern -"
+            f"'Is X Y?' should be represented as (Y X)"
             f"You can use the following entities: {entities}, "
             f"relationships: {list(relationships.keys())}, and "
             f"properties: {properties}. "
