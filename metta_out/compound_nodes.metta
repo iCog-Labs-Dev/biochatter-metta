@@ -57,6 +57,3 @@
 (source (compound CID2498718) "pubchem")
 (version (compound CID2498718) "1.0")
 (source_url (compound CID2498718) "https://pubchem.ncbi.nlm.nih.gov/rest/rdf/compound/")
-
-!(match &self ($prop (compound CID2499366) $val)
-    ($prop $val))
