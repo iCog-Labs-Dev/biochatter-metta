@@ -519,7 +519,7 @@ class BioCypherPromptEngine:
         Returns:
             A database query that could answer the user's question.
         """
-        # ============================================================
+      
         print("-"*20)
         print(f"All Entities: {self.entities}")
         print("-"*20)
@@ -547,23 +547,73 @@ class BioCypherPromptEngine:
         print(f"Selected Relationships: {list(relationships.keys())}")
         print(f"Selected Properties: {properties}")
 
-            # f"Generate a database query in {query_language} that answers "
-            # f"the user's question. "
         msg = (
-            f"Generate Scheme expressions that answers the user's question."
-            f"Distinguish questions and statements."
-            f"Universal quantification should follow the pattern -"
-            f"'All/any X are Y' should be represented as (= (Y $x) (X $x))"
-            f"'All/any X Predicate Y' should be represented as (= (Predicate Y $x) (X $x))"
-            f"'All/any X are not Y' should be represented as (= (Y $x) (not (X $x)))"
-            f"Is-a expressions should follow the pattern -"
-            f"'X is Y' should be represented as (= (Y X) True)"
-            f"'X is not Y' should be represented as (= (Y X) False)"
-            f"All questions should follow the pattern -"
-            f"'Is X Y?' should be represented as (Y X)"
+            f'''Generate a database query in a query language called MeTTA, 
+            here are some examples for its syntax
+            
+            ;Get properties of gene ENSG00000177508
+            (match &self ($prop (gene ENSG00000177508) $val)
+                ($prop $val))
+
+            ;Find the transcripts of gene ENSG00000177508
+            (match &self (transcribed_to (gene ENSG00000177508) $transcript)
+                $transcript)
+
+            ;What are the proteins that gene ENSG00000177508 codes for
+            (match &self (, (transcribed_to (gene ENSG00000177508) $transcript)
+                            (translated_to $transcript $protein))
+                            $protein)
+
+            ;Find the Gene Ontology (GO) categories associated with protein A0A024RBG1
+            (match &self (go_gene_product $ontology (protein P78415))
+                $ontology)
+
+            ;Find the GO categories associated with gene ENSG00000177508
+            (match &self (, (transcribed_to (gene ENSG00000177508) $transcript)
+                            (translated_to $transcript $protein)
+                            (go_gene_product $ontology $protein))
+                            $ontology)
+
+            ;Find biological process GO categories associated with gene ENSG00000177508
+            (match &self (, (transcribed_to (gene ENSG00000177508) $transcript)
+                            (translated_to $transcript $protein)
+                            (go_gene_product $ontology $protein)
+                            (subontology $ontology biological_process))
+                            $ontology)
+
+            ;Find pathways that gene ENSG00000177508 is a subset of
+            (match &self (genes_pathways (gene ENSG00000177508) $p)
+                    $p)
+
+            ;Find pathways that gene IRX3 is a subset of (use the gene HGNC symbol instead of ensembl id)
+            (match &self (, (gene_name (gene $ens) IRX3)
+                            (genes_pathways (gene $ens) $p))
+                    $p)
+
+            ;Find parent pathways of the pathways that 
+            ;gene IRX3 is a subset of (use the gene HGNC symbol instead of ensembl id)
+            (match &self (, (gene_name (gene $ens) IRX3)
+                            (genes_pathways (gene $ens) $p1)
+                            (parent_pathway_of $p2 $p1))
+                    $p2)
+
+            ;What variants have eqtl association with gene IRX3
+            (match &self (, (gene_name (gene $ens) IRX3)
+                            (eqtl $seq $ens))
+                            $seq)
+
+            ;What variants have eqtl association with gene IRX3 and return the 
+            ;properties of the association
+            (match &self (, (gene_name (gene $ens) IRX3)
+                            (eqtl $seq $ens)
+                            ($prop (eqtl $seq $ens) $val))
+                            ($prop (eqtl $seq $ens) $val))
+            
+            , as you are an expert in this language you will format the queries based on the example I have given you that answers'''
+            f"the user's question. " 
             f"You can use the following entities: {entities}, "
             f"relationships: {list(relationships.keys())}, and "
-            f"properties: {properties}. "
+            f"properties: {properties}. When generating the query, give entity names in lowercase."
         )
 
         for relationship, values in relationships.items():
