@@ -1,20 +1,24 @@
-from biochatter.prompts import BioCypherPromptEngine
 from hyperon import MeTTa
+from biochatter.prompts import BioCypherPromptEngine
 
-prompts = BioCypherPromptEngine(
-    schema_config_or_info_path='./biocypher_config/schema_config.yaml'
-)
+# user_question="List the components of the compound 'CID432412'?"
+# user_question="What is the name of the compound with id 'CID32145'?"
+# user_question="List the descriptor attributes of the compound with id 'CID32145'?"
+# user_question="What are the descriptors of compounds?"
+# user_question="What are the sources for the parent relationship between compounds?"
+# user_question="What is the source for descriptors of compounds?"
+#user_question="What is the exact mass descriptor of the compound with id 'CID2498821'"
+
 
 model_name = "gpt-3.5-turbo"
-schema_config_or_info_dict = "./utils/schema_config.yaml"
+schema_config_or_info_dict = "./biocypher_config/schema_config.yaml"
+metta_file = "./metta_out/nodes.metta"
 user_question = "Give me the query to get the name for the compund with CID CID2499366 VALUE "
-metta_file = "./utils/nodes.metta"
 
 
 prompt_engine = BioCypherPromptEngine(
             model_name=model_name,
             schema_config_or_info_path=schema_config_or_info_dict,
-            # conversation_factory=conversation_factory,
         )
 
 
@@ -24,38 +28,8 @@ metta_query = prompt_engine.generate_query(user_question)
 print("\n\nLLM query:\n")
 print(metta_query)
 
-# //////////////////////////////////////////////////////////
-
-
-# Wanted
-# !(match &self ($prop (gene ENSG00000290825) $val)
-#     ($prop $val))
-
-# Got
-# MATCH (c:Compound)-[:HAS_DESCRIPTOR]->(d:Descriptor)
-# RETURN c.name, d.name, d.unit, d.source, d.source_url;
-
-# MATCH (c:Compound)-[:HAS_DESCRIPTOR]->(d:Descriptor)
-# WHERE c.name = 'Aspirin'
-# RETURN c.name, d.name, d.unit, d.source, d.source_url;
-
-# MATCH (c:Compound)-[:HAS_DESCRIPTOR]->(d:Descriptor)
-# WHERE c.name = 'IRX3'
-# RETURN d.name, d.unit
-
-# (match &self ($prop (Entity Compound) $val)
-#     ($prop (Entity Compound) $val))
-
 
 metta = MeTTa()
 print("\n\nMeTTa runtime:\n")
 print(metta.import_file(metta_file))
-    # question="List the components of the compound 'CID432412'?"
-    # question="What is the name of the compound with id 'CID32145'?"
-    # question="List the descriptor attributes of the compound with id 'CID32145'?"
-    # question="What are the descriptors of compounds?"
-
-    # question="What are the sources for the parent relationship between compounds?"
-    # question="What is the source for descriptors of compounds?"
-#     question="What is the exact mass descriptor of the compound with id 'CID2498821'"
 
