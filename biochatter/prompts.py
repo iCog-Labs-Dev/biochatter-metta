@@ -591,7 +591,7 @@ class BioCypherPromptEngine:
             f"the user's question. "
             f"You can use the following entities: {entities}, "
             f"relationships: {list(relationships.keys())}, and "
-            f"properties: {properties}. "
+            f"properties: {properties}. When generating the query, give entity names in lowercase."
         )
 
         for relationship, values in relationships.items():
