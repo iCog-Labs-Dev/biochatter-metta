@@ -364,7 +364,7 @@ class BioCypherPromptEngine:
         else:
             rels = json.dumps(self.relationships)
 
-        print('All valid relationships: ', rels)
+        # print('All valid relationships: ', rels)
 
         msg = (
             "You have access to a knowledge graph that contains "
@@ -487,6 +487,26 @@ class BioCypherPromptEngine:
 
         return bool(self.selected_properties)
 
+    def generate_sample_metta_string(self, entities, relationships, properties):
+        output = ""
+        for entity in entities:
+            if entity in properties:
+                output += f"({entity} {entity}_id)\n"
+                for prop, value_required in properties[entity].items():
+                    if value_required:
+                        output += f"({prop} ({entity} {entity}_id) ${prop}_value)\n"
+                    else:
+                        output += f"({prop} ({entity} {entity}_id))\n"
+            output += '\n'
+            
+        for rel, endpoints in relationships.items():
+            source = endpoints['source']
+            target = endpoints['target']
+            output += f"({rel} ({source} {source}_id) ({target} {target}_id))\n"
+            output += f"(value ({rel} ({source} {source}_id) ({target} {target}_id)) ${rel}_value)\n\n"
+
+        return output
+
     def _generate_query(
         self,
         question: str,
@@ -520,111 +540,74 @@ class BioCypherPromptEngine:
             A database query that could answer the user's question.
         """
       
-        print("-"*20)
-        print(f"All Entities: {self.entities}")
-        print("-"*20)
-        print(f"All Relationships: {self.relationships}")
-        print("-"*20)
+        # print("-"*20)
+        # print(f"All Entities: {self.entities}")
+        # print("-"*20)
+        # print(f"All Relationships: {self.relationships}")
+        # print("-"*20)
         e_props = {}
         for entity in self.selected_entities:
             if self.entities[entity].get("properties"):
                 e_props[entity] = list(
                     self.entities[entity]["properties"].keys()
                 )
-        print(f"All Entity Props: {e_props}")
-        print("-"*20)
+        # print(f"All Entity Props: {e_props}")
+        # print("-"*20)
         r_props = {}
         for relationship in self.selected_relationships:
             if self.relationships[relationship].get("properties"):
                 r_props[relationship] = list(
                     self.relationships[relationship]["properties"].keys()
                 )
-        print(f"All Relationship Props: {r_props}")
+        # print(f"All Relationship Props: {r_props}")
     
-        print("%"*20)
+        # print("%"*20)
 
-        print(f"Selected Entities: {entities}")
-        print(f"Selected Relationships: {list(relationships.keys())}")
-        print(f"Selected Properties: {properties}")
+        # print(f"Selected Entities: {entities}")
+        # print(f"Selected Relationships Full: {relationships}")
+        # print(f"Selected Relationships: {list(relationships.keys())}")
+        # print(f"Selected Properties: {properties}")
+        
+        sample_metta_string = self.generate_sample_metta_string(
+            entities=list(entities),
+            relationships=dict(relationships),
+            properties=dict(properties)
+        )
 
         msg = (
-            f'''Generate a database query in a query language called MeTTA, 
-            here are some examples for its syntax
-            
-            ;Get properties of gene ENSG00000177508
-            (match &self ($prop (gene ENSG00000177508) $val)
-                ($prop $val))
-
-            ;Find the transcripts of gene ENSG00000177508
-            (match &self (transcribed_to (gene ENSG00000177508) $transcript)
-                $transcript)
-
-            ;What are the proteins that gene ENSG00000177508 codes for
-            (match &self (, (transcribed_to (gene ENSG00000177508) $transcript)
-                            (translated_to $transcript $protein))
-                            $protein)
-
-            ;Find the Gene Ontology (GO) categories associated with protein A0A024RBG1
-            (match &self (go_gene_product $ontology (protein P78415))
-                $ontology)
-
-            ;Find the GO categories associated with gene ENSG00000177508
-            (match &self (, (transcribed_to (gene ENSG00000177508) $transcript)
-                            (translated_to $transcript $protein)
-                            (go_gene_product $ontology $protein))
-                            $ontology)
-
-            ;Find biological process GO categories associated with gene ENSG00000177508
-            (match &self (, (transcribed_to (gene ENSG00000177508) $transcript)
-                            (translated_to $transcript $protein)
-                            (go_gene_product $ontology $protein)
-                            (subontology $ontology biological_process))
-                            $ontology)
-
-            ;Find pathways that gene ENSG00000177508 is a subset of
-            (match &self (genes_pathways (gene ENSG00000177508) $p)
-                    $p)
-
-            ;Find pathways that gene IRX3 is a subset of (use the gene HGNC symbol instead of ensembl id)
-            (match &self (, (gene_name (gene $ens) IRX3)
-                            (genes_pathways (gene $ens) $p))
-                    $p)
-
-            ;Find parent pathways of the pathways that 
-            ;gene IRX3 is a subset of (use the gene HGNC symbol instead of ensembl id)
-            (match &self (, (gene_name (gene $ens) IRX3)
-                            (genes_pathways (gene $ens) $p1)
-                            (parent_pathway_of $p2 $p1))
-                    $p2)
-
-            ;What variants have eqtl association with gene IRX3
-            (match &self (, (gene_name (gene $ens) IRX3)
-                            (eqtl $seq $ens))
-                            $seq)
-
-            ;What variants have eqtl association with gene IRX3 and return the 
-            ;properties of the association
-            (match &self (, (gene_name (gene $ens) IRX3)
-                            (eqtl $seq $ens)
-                            ($prop (eqtl $seq $ens) $val))
-                            ($prop (eqtl $seq $ens) $val))
-            
-            , as you are an expert in this language you will format the queries based on the example I have given you that answers'''
-            f"the user's question. " 
+            f"I have a datastore that follows this sample syntax:"
+            f"{sample_metta_string}\n"
+            f"The pattern matching query should look like this for different user prompts..."
+            f"To get the properties and values for a certain entity with id 'entity_id':"
+            f"!(match &self ($property (entity entity_id) $value)\
+                ($property $value))"
+            f"To get the value of a certain relationship of a source and target entity:"
+            f"!(match &self (value (relationship (source_entity source_entity_id) (target_entity target_entity_id)) $value)\
+                ($value))"
+            f"To get the list of all target entities of a relationship for a certain source entity:"
+            f"!(match &self (relationship (source_entity source_entity_id) (target_entity $target))\
+                ($target))"
+            f"You should always find look for the entity ids in the user's question and replace them in the query."
+            f"Any entity id in the form of 'entity_id' should not exist in the query."
+            f"If you don't find anything that resembles an 'id', you can put it as a variable (which has '$' infront of it) and\
+                add the variable to the return value like this:\
+                !(match &self ($property (entity $entity_id) $value)\
+                ($property $value $entity_id))"
             f"You can use the following entities: {entities}, "
             f"relationships: {list(relationships.keys())}, and "
-            f"properties: {properties}. When generating the query, give entity names in lowercase."
+            f"properties: {properties}."
+            f"Write a pattern matching query for the user's question"
         )
 
         for relationship, values in relationships.items():
             self._expand_pairs(relationship, values)
 
-        if self.rel_directions:
-            msg += "Given the following valid combinations of source, relationship, and target: "
-            for key, value in self.rel_directions.items():
-                for pair in value:
-                    msg += f"'(:{pair[0]})-(:{key})->(:{pair[1]})', "
-            msg += f"generate a {query_language} query using one of these combinations. "
+        # if self.rel_directions:
+        #     msg += "Given the following valid combinations of source, relationship, and target: "
+        #     for key, value in self.rel_directions.items():
+        #         for pair in value:
+        #             msg += f"'(:{pair[0]})-(:{key})->(:{pair[1]})', "
+        #     msg += f"generate a {query_language} query using one of these combinations. "
 
         msg += "Only return the query, without any additional text."
 
