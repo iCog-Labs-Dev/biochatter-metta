@@ -18,11 +18,11 @@ prompt_engine = BioCypherPromptEngine(
         )
 
 
-cypher_query = prompt_engine.generate_query(user_question)
+metta_query = prompt_engine.generate_query(user_question)
 
 # query_func = agent.get_query_results
 print("\n\nLLM query:\n")
-print(cypher_query)
+print(metta_query)
 
 # //////////////////////////////////////////////////////////
 
