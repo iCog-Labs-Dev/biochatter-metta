@@ -50,3 +50,12 @@ print(metta_query)
 metta = MeTTa()
 print("\n\nMeTTa runtime:\n")
 print(metta.import_file(metta_file))
+    # question="List the components of the compound 'CID432412'?"
+    # question="What is the name of the compound with id 'CID32145'?"
+    # question="List the descriptor attributes of the compound with id 'CID32145'?"
+    # question="What are the descriptors of compounds?"
+
+    # question="What are the sources for the parent relationship between compounds?"
+    # question="What is the source for descriptors of compounds?"
+#     question="What is the exact mass descriptor of the compound with id 'CID2498821'"
+

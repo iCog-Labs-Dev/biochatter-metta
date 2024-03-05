@@ -2,7 +2,7 @@ from typing import Optional
 import yaml
 import json
 import os
-from ._misc import sentencecase_to_pascalcase, ensure_iterable
+from ._misc import ensure_iterable, sentencecase_to_snakecase, sentencecase_to_pascalcase
 from .llm_connect import Conversation, GptConversation
 
 
@@ -87,16 +87,16 @@ class BioCypherPromptEngine:
                         value["represented_as"] == "node"
                         and not name_indicates_relationship
                     ):
-                        self.entities[sentencecase_to_pascalcase(key)] = value
+                        self.entities[key] = value
                     elif (
                         value["represented_as"] == "node"
                         and name_indicates_relationship
                     ):
-                        self.relationships[sentencecase_to_pascalcase(key)] = (
+                        self.relationships[sentencecase_to_snakecase(key)] = (
                             value
                         )
                     elif value["represented_as"] == "edge":
-                        self.relationships[sentencecase_to_pascalcase(key)] = (
+                        self.relationships[sentencecase_to_snakecase(key)] = (
                             value
                         )
         else:
@@ -106,10 +106,10 @@ class BioCypherPromptEngine:
                 if value.get("present_in_knowledge_graph", None) == False:
                     continue
                 if value.get("is_relationship", None) == False:
-                    self.entities[sentencecase_to_pascalcase(key)] = value
+                    self.entities[sentencecase_to_snakecase(key)] = value
                 elif value.get("is_relationship", None) == True:
-                    value = self._capitalise_source_and_target(value)
-                    self.relationships[sentencecase_to_pascalcase(key)] = value
+                    # value = self._capitalise_source_and_target(value)
+                    self.relationships[sentencecase_to_snakecase(key)] = value
 
         self.question = ""
         self.selected_entities = []
@@ -267,7 +267,7 @@ class BioCypherPromptEngine:
             for entity in result:
                 entity = entity.strip()
                 if entity in self.entities:
-                    self.selected_entities.append(entity)
+                    self.selected_entities.append(entity.lower())
 
         return bool(result)
 
@@ -363,6 +363,8 @@ class BioCypherPromptEngine:
             rels = json.dumps(selected_rels)
         else:
             rels = json.dumps(self.relationships)
+
+        print('All valid relationships: ', rels)
 
         msg = (
             "You have access to a knowledge graph that contains "
@@ -517,13 +519,33 @@ class BioCypherPromptEngine:
         Returns:
             A database query that could answer the user's question.
         """
-        # msg = (
-        #     f"Generate a database query in {query_language} that answers "
-        #     f"the user's question. "
-        #     f"You can use the following entities: {entities}, "
-        #     f"relationships: {list(relationships.keys())}, and "
-        #     f"properties: {properties}. "
-        # )
+      
+        print("-"*20)
+        print(f"All Entities: {self.entities}")
+        print("-"*20)
+        print(f"All Relationships: {self.relationships}")
+        print("-"*20)
+        e_props = {}
+        for entity in self.selected_entities:
+            if self.entities[entity].get("properties"):
+                e_props[entity] = list(
+                    self.entities[entity]["properties"].keys()
+                )
+        print(f"All Entity Props: {e_props}")
+        print("-"*20)
+        r_props = {}
+        for relationship in self.selected_relationships:
+            if self.relationships[relationship].get("properties"):
+                r_props[relationship] = list(
+                    self.relationships[relationship]["properties"].keys()
+                )
+        print(f"All Relationship Props: {r_props}")
+    
+        print("%"*20)
+
+        print(f"Selected Entities: {entities}")
+        print(f"Selected Relationships: {list(relationships.keys())}")
+        print(f"Selected Properties: {properties}")
 
         msg = (
             f'''Generate a database query in a query language called MeTTA, 
@@ -588,7 +610,7 @@ class BioCypherPromptEngine:
                             ($prop (eqtl $seq $ens) $val))
             
             , as you are an expert in this language you will format the queries based on the example I have given you that answers'''
-            f"the user's question. "
+            f"the user's question. " 
             f"You can use the following entities: {entities}, "
             f"relationships: {list(relationships.keys())}, and "
             f"properties: {properties}. When generating the query, give entity names in lowercase."
