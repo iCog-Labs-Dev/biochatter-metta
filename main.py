@@ -11,8 +11,11 @@ prompt_engine = BioCypherPromptEngine(
 # user_question = "What are the descriptor ids for the compound with id 'CID2499326'?"
 user_question="What is the Exact_Mass descriptor of the compound with id 'CID2499326'? In this case you can take 'Exact_Mass' as the descriptor id"
 
-metta_query = prompt_engine.generate_query(user_question)
-print("\nLLM query:\n", metta_query)
+llm_generated_query = prompt_engine.generate_query(user_question)
+print("\nLLM Generated Query:\n", llm_generated_query)
+
+metta_query = f"!(match &self {llm_generated_query})"
+print("\nMeTTa Query:\n", metta_query)
 
 metta = MeTTa()
 

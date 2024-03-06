@@ -579,20 +579,20 @@ class BioCypherPromptEngine:
             f"{sample_metta_string}\n"
             f"The pattern matching query should look like this for different user prompts..."
             f"To get the properties and values for a certain entity with id 'entity_id':"
-            f"!(match &self ($property (entity entity_id) $value)\
-                ($property $value))"
+            f"($property (entity entity_id) $value)\
+                ($property $value)"
             f"To get the value of a certain relationship of a source and target entity:"
-            f"!(match &self (value (relationship (source_entity source_entity_id) (target_entity target_entity_id)) $value)\
-                ($value))"
+            f"(value (relationship (source_entity source_entity_id) (target_entity target_entity_id)) $value)\
+                ($value)"
             f"To get the list of all target entities of a relationship for a certain source entity:"
-            f"!(match &self (relationship (source_entity source_entity_id) (target_entity $target))\
-                ($target))"
-            f"You should always find look for the entity ids in the user's question and replace them in the query."
+            f"(relationship (source_entity source_entity_id) (target_entity $target))\
+                ($target)"
+            f"You should always look for the entity ids in the user's question and replace them in the query."
             f"Any entity id in the form of 'entity_id' should not exist in the query."
-            f"If you don't find anything that resembles an 'id', you can put it as a variable (which has '$' infront of it) and\
+            f"If you don't find anything that resembles an 'id', you can put it as a variable (which has '$' in front of it) and\
                 add the variable to the return value like this:\
-                !(match &self ($property (entity $entity_id) $value)\
-                ($property $value $entity_id))"
+                ($property (entity $entity_id) $value)\
+                ($property $value $entity_id)"
             f"You can use the following entities: {entities}, "
             f"relationships: {list(relationships.keys())}, and "
             f"properties: {properties}."
