@@ -1,5 +1,9 @@
 from hyperon import MeTTa
 from biochatter.prompts import BioCypherPromptEngine
+from biochatter.llm_connect import Conversation
+from biochatter.llm_connect import GptConversation
+import os
+
 
 
 prompt_engine = BioCypherPromptEngine(
@@ -32,4 +36,24 @@ metta_sample = f"""\
 {str(metta_query).strip()}
 """
 
-print("\nMeTTa output:\n", metta.run(metta_sample))
+query_result = metta.run(metta_sample)
+print("\nMeTTa output:\n", query_result)
+
+# c = Conversation()
+# ans = c.query(f"present the following result in a natural language a result is present {query_result} ")
+
+# print(ans)
+
+conversation = GptConversation(
+    model_name="gpt-3.5-turbo",
+    prompts={},
+    correct=False,
+)
+
+conversation.set_api_key(
+    api_key=os.getenv("OPENAI_API_KEY"), user="query_interactor"
+)
+
+out_msg, token_usage, correction = conversation.query(f"present the following result '{query_result}' for the following query '{user_question}' in a natural language if result is present  ")
+
+print(out_msg)
