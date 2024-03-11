@@ -1,9 +1,7 @@
-from hyperon import MeTTa
-from biochatter.prompts import BioCypherPromptEngine
-from biochatter.llm_connect import Conversation
-from biochatter.llm_connect import GptConversation
 import os
-
+from hyperon import MeTTa
+from biochatter.llm_connect import GptConversation
+from biochatter.prompts import BioCypherPromptEngine
 
 
 prompt_engine = BioCypherPromptEngine(
@@ -13,7 +11,18 @@ prompt_engine = BioCypherPromptEngine(
 # user_question="What is the name of the compound with id 'CID499989'?"
 # user_question="What is the unit value for the descriptor with id 'Molecular_Weight'?"
 # user_question = "What are the descriptor ids for the compound with id 'CID2499326'?"
-user_question="What is the Exact_Mass descriptor of the compound with id 'CID2499326'? In this case you can take 'Exact_Mass' as the descriptor id"
+# user_question="What is the Exact_Mass descriptor of the compound with id 'CID2499326'? In this case you can take 'Exact_Mass' as the descriptor id"
+
+# user_question="What is the term name for the ontology term with ID 'GO:0000001'?"
+user_question="Provide the description for the ontology term with ID 'GO:0000002'."
+# user_question="What are the synonyms for the ontology term with ID 'GO:0000005'?"
+# user_question="In which subontology does the ontology term with ID 'GO:0000011' belong?"
+# user_question="What is the source URL for the ontology term with ID 'GO:0000015'?"
+# user_question="What is the relationship type between the ontology terms 'GO:0000001' and 'GO:0048308'?"
+# user_question="Provide the source of the ontology relationship between 'GO:0000006' and 'GO:0005385'."
+# user_question="What is the term name for the ontology term with ID 'GO:0000012'?"
+# user_question="Give the description for the ontology term with ID 'GO:0000014'."
+# user_question="What is the subclass relationship type between the ontology terms 'GO:0000019' and 'number_39'?"
 
 llm_generated_query = prompt_engine.generate_query(user_question)
 print("\nLLM Generated Query:\n", llm_generated_query)
@@ -29,9 +38,8 @@ def read_metta_file(filename):
     return str(file_content)
 
 metta_sample = f"""\
-{read_metta_file('./metta_out/compound_nodes.metta')}\
-{read_metta_file('./metta_out/compound_edges.metta')}\
-{read_metta_file('./metta_out/descriptor_nodes.metta')}\
+{read_metta_file('./metta_out/nodes.metta')}\
+{read_metta_file('./metta_out/edges.metta')}\
 
 {str(metta_query).strip()}
 """
@@ -39,10 +47,6 @@ metta_sample = f"""\
 query_result = metta.run(metta_sample)
 print("\nMeTTa output:\n", query_result)
 
-# c = Conversation()
-# ans = c.query(f"present the following result in a natural language a result is present {query_result} ")
-
-# print(ans)
 
 conversation = GptConversation(
     model_name="gpt-3.5-turbo",

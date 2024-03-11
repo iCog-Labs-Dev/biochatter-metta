@@ -67,6 +67,7 @@ class BioCypherPromptEngine:
                 schema_config = yaml.safe_load(f)
         elif schema_config_or_info_dict:
             schema_config = schema_config_or_info_dict
+        # print(schema_config)
 
         # check whether it is the original schema config or the output of
         # biocypher info
@@ -110,6 +111,10 @@ class BioCypherPromptEngine:
                 elif value.get("is_relationship", None) == True:
                     # value = self._capitalise_source_and_target(value)
                     self.relationships[sentencecase_to_snakecase(key)] = value
+
+        self.entities['ontology_term'] = self.entities.pop("ontology term")
+        
+        print(self.entities)
 
         self.question = ""
         self.selected_entities = []
@@ -573,6 +578,8 @@ class BioCypherPromptEngine:
             relationships=dict(relationships),
             properties=dict(properties)
         )
+
+        print(sample_metta_string)
 
         msg = (
             f"I have a datastore that follows this sample syntax:"
