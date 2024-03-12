@@ -14,20 +14,28 @@ prompt_engine = BioCypherPromptEngine(
 # user_question="What is the Exact_Mass descriptor of the compound with id 'CID2499326'? In this case you can take 'Exact_Mass' as the descriptor id"
 
 # user_question="What is the term name for the ontology term with ID 'GO:0000001'?"
-user_question="Provide the description for the ontology term with ID 'GO:0000002'."
+# user_question="Provide the description for the ontology term with ID 'GO:0000002'."
 # user_question="What are the synonyms for the ontology term with ID 'GO:0000005'?"
 # user_question="In which subontology does the ontology term with ID 'GO:0000011' belong?"
 # user_question="What is the source URL for the ontology term with ID 'GO:0000015'?"
-# user_question="What is the relationship type between the ontology terms 'GO:0000001' and 'GO:0048308'?"
-# user_question="Provide the source of the ontology relationship between 'GO:0000006' and 'GO:0005385'."
 # user_question="What is the term name for the ontology term with ID 'GO:0000012'?"
 # user_question="Give the description for the ontology term with ID 'GO:0000014'."
-# user_question="What is the subclass relationship type between the ontology terms 'GO:0000019' and 'number_39'?"
 
-llm_generated_query = prompt_engine.generate_query(user_question)
-print("\nLLM Generated Query:\n", llm_generated_query)
 
-metta_query = f"!(match &self {llm_generated_query})"
+# user_question = "What is the subontology of the ontology term with ID 'GO:0000011'?"
+user_question = "Provide the term name and subontology for the ontology term with ID 'GO:0000022'."
+# user_question = "What is the subontology of the ontology term with ID 'GO:0000015'?"
+# user_question = "Give me the term name and subontology for the ontology term with ID 'GO:0000028'."
+
+
+llm_generated_scheme_query = prompt_engine.generate_query(user_question, "scheme")
+llm_generated_metta_query = prompt_engine.generate_query(user_question)
+
+print("\nLLM Generated Scheme Query:\n", llm_generated_scheme_query)
+
+print("\nLLM Generated MeTTa Query:\n", llm_generated_metta_query)
+
+metta_query = f"!(match &self {llm_generated_metta_query})"
 print("\nMeTTa Query:\n", metta_query)
 
 metta = MeTTa()

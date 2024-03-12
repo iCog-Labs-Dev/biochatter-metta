@@ -227,3 +227,11 @@
 (synonyms (ontology_term GO:0000033) ())
 (source (ontology_term GO:0000033) "GO")
 (source_url (ontology_term GO:0000033) "http://purl.obolibrary.org/obo/go.owl")
+
+!(match &self
+    (,
+        (subontology (ontology_term $id) "biological_process")
+        (term_name (ontology_term $id) $term_name)
+    )
+        ($id $term_name)
+)
