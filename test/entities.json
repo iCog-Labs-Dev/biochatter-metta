@@ -1,0 +1,230 @@
+{
+  "gene": {
+    "represented_as": "node",
+    "preferred_id": "ensemble",
+    "input_label": "gene",
+    "properties": {
+      "chr": "str",
+      "start": "int",
+      "end": "int",
+      "name": "str",
+      "gene_type": "str",
+      "synonyms": "str[]",
+      "source": "str",
+      "version": "str",
+      "source_url": "str"
+    }
+  },
+  "protein": {
+    "represented_as": "node",
+    "preferred_id": "uniprot",
+    "input_label": "protein",
+    "properties": {
+      "accessions": "int",
+      "organism_id": "int",
+      "name": "str",
+      "synonyms": "str[]",
+      "source": "str",
+      "version": "str",
+      "source_url": "str"
+    }
+  },
+  "transcript": {
+    "represented_as": "node",
+    "input_label": "transcript",
+    "properties": {
+      "chr": "str",
+      "start": "int",
+      "end": "int",
+      "gene_name": "str",
+      "transcript_name": "str",
+      "transcript_id": "str",
+      "transcript_type": "str",
+      "source": "str",
+      "version": "str",
+      "source_url": "str"
+    },
+    "is_a": "nucleic acid entity",
+    "description": "An RNA synthesized on a DNA or RNA template by an RNA polymerase.",
+    "exact_mappings": [
+      "SO:0000673",
+      "SIO:010450",
+      "WIKIDATA:Q7243183",
+      "dcid:RNATranscript"
+    ],
+    "in_subset": ["model_organism_database"]
+  },
+  "sequence variant": {
+    "represented_as": "node",
+    "input_label": "sequence_variant",
+    "accessible_via": {
+      "name": "variants",
+      "description": "Retrieve variant data. For example: region = chr1:1157520-1158189 or funseq_description = noncoding or rsid = rs2045642915",
+      "filter_by": "_id",
+      "filter_by_range": "pos",
+      "return": "_id, chr, pos, rsid, ref, alt, qual, filter, format, source, source_url, annotations"
+    },
+    "properties": {
+      "chr": "str",
+      "pos": "int",
+      "rsid": "array",
+      "ref": "str",
+      "alt": "str",
+      "source": "str",
+      "source_url": "str",
+      "annotation": "obj"
+    },
+    "aliases": ["allele"],
+    "local_names": { "agr": "allele" },
+    "is_a": "biological entity",
+    "mixins": ["genomic entity", "physical essence", "ontology class"],
+    "description": "A sequence_variant is a non exact copy of a sequence_feature or genome exhibiting one or more sequence_alteration.",
+    "comments": [
+      "This class is for modeling the specific state at a locus. A single DBSNP rs ID could correspond to more than one sequence variants (e.g CIViC:1252 and CIViC:1253, two distinct BRCA2 alleles for rs28897743)"
+    ],
+    "exact_mappings": ["WIKIDATA:Q15304597"],
+    "close_mappings": [
+      "dcid:Allele",
+      "SO:0001060",
+      "VMC:Allele",
+      "GENO:0000002",
+      "SIO:010277",
+      "SO:0001060"
+    ],
+    "id_prefixes": [
+      "CAID",
+      "CLINVAR",
+      "WIKIDATA",
+      "DBSNP",
+      "MGI",
+      "ZFIN",
+      "FB",
+      "RGD",
+      "AGRKB",
+      "SPDI",
+      "WB",
+      "WormBase",
+      "PHARMGKB.VARIANT"
+    ],
+    "alt_descriptions": {
+      "AGR": "An entity that describes a single affected, endogenous allele. These can be of any type that matches that definition",
+      "VMC": "A contiguous change at a Location"
+    },
+    "slots": ["has gene"],
+    "slot_usage": {
+      "has gene": {
+        "multivalued": true,
+        "description": "Each allele can be associated with any number of genes"
+      },
+      "has biological sequence": {
+        "description": "The state of the sequence w.r.t a reference sequence"
+      },
+      "id": {
+        "examples": [
+          {
+            "value": "ZFIN:ZDB-ALT-980203-1091",
+            "description": "ti282a allele from ZFIN"
+          },
+          {
+            "value": "CLINVAR:17681",
+            "description": "NM_007294.3(BRCA1):c.2521C>T (p.Arg841Trp)"
+          }
+        ]
+      }
+    },
+    "in_subset": ["model_organism_database"]
+  },
+  "regulatory region": {
+    "represented_as": "node",
+    "input_label": "regulatory_region",
+    "properties": {
+      "chr": "str",
+      "start": "int",
+      "end": "int",
+      "biological_context": "str",
+      "biochemical_activity": "str",
+      "source": "str",
+      "source_url": "str"
+    },
+    "aliases": ["regulatory element", "accessible dna element"],
+    "description": "A region (or regions) of the genome that contains known or putative regulatory elements that act in cis- or trans- to affect the transcription of gene",
+    "is_a": "biological entity",
+    "mixins": [
+      "genomic entity",
+      "chemical entity or gene or gene product",
+      "physical essence",
+      "ontology class"
+    ],
+    "exact_mappings": ["SO:0005836", "SIO:001225", "WIKIDATA:Q3238407"]
+  },
+  "pathway": {
+    "is_a": "biological process",
+    "exact_mappings": ["PW:0000001", "WIKIDATA:Q4915012"],
+    "narrow_mappings": ["SIO:010526", "GO:0007165"],
+    "represented_as": "node",
+    "input_label": "pathway",
+    "properties": {
+      "id_version": "str",
+      "name": "str",
+      "is_in_disease": "boolean",
+      "name_aliases": "array",
+      "species": "str",
+      "disease_ontology_terms": "array",
+      "go_biological_process": "str",
+      "is_top_level_pathway": "boolean",
+      "source": "str",
+      "source_url": "str"
+    }
+  },
+  "tad": {
+    "is_a": "entity",
+    "represented_as": "node",
+    "input_label": "tad",
+    "properties": {
+      "chr": "str",
+      "start": "int",
+      "end": "int",
+      "genes": "str[]",
+      "source": "str",
+      "source_url": "str"
+    }
+  },
+  "motif": {
+    "represented_as": "node",
+    "is_a": "ontology class",
+    "input_label": "motif",
+    "db_collection_name": "motifs",
+    "db_collection_per_chromosome": false,
+    "db_indexes": { "text": { "type": "inverted", "fields": "tf_name" } },
+    "accessible_via": {
+      "name": "motifs",
+      "description": "TF binding motifs.",
+      "fuzzy_text_search": "tf_name",
+      "return": "_id, tf_name, source, source_url, pwm, length"
+    },
+    "properties": {
+      "tf_name": "str",
+      "source": "str",
+      "source_url": "str",
+      "pwm_A": "float[]",
+      "pwm_C": "float[]",
+      "pwm_G": "float[]",
+      "pwm_T": "float[]",
+      "length": "str"
+    }
+  },
+  "ontology_term": {
+    "is_a": "ontology class",
+    "represented_as": "node",
+    "input_label": "ontology term",
+    "properties": {
+      "term_name": "str",
+      "description": "str",
+      "synonyms": "obj",
+      "subontology": "str",
+      "subset": "str",
+      "source": "str",
+      "source_url": "str"
+    }
+  }
+}
