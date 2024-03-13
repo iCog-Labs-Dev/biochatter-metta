@@ -5,6 +5,8 @@ import os
 from ._misc import ensure_iterable, sentencecase_to_snakecase, sentencecase_to_pascalcase
 from .llm_connect import Conversation, GptConversation
 
+from .metta_prompt import get_metta_prompt, generate_sample_metta_string
+
 
 class BioCypherPromptEngine:
     def __init__(
@@ -192,16 +194,7 @@ class BioCypherPromptEngine:
                 "Property selection failed. Please try again with a different "
                 "question."
             )
-        
-        if query_language == "scheme":
-            return self._generate_scheme_query(
-                question=question,
-                entities=self.selected_entities,
-                relationships=self.selected_relationship_labels,
-                properties=self.selected_properties,
-                query_language=query_language,
-                conversation=self.conversation_factory(),
-            )
+
         return self._generate_metta_query(
                 question=question,
                 entities=self.selected_entities,
@@ -501,26 +494,6 @@ class BioCypherPromptEngine:
 
         return bool(self.selected_properties)
 
-    def generate_sample_metta_string(self, entities, relationships, properties):
-        output = ""
-        for entity in entities:
-            if entity in properties:
-                output += f"({entity} {entity}_id)\n"
-                for prop, value_required in properties[entity].items():
-                    if value_required:
-                        output += f"({prop} ({entity} {entity}_id) ${prop}_value)\n"
-                    else:
-                        output += f"({prop} ({entity} {entity}_id))\n"
-            output += '\n'
-            
-        for rel, endpoints in relationships.items():
-            source = endpoints['source']
-            target = endpoints['target']
-            output += f"({rel} ({source} {source}_id) ({target} {target}_id))\n"
-            output += f"(value ({rel} ({source} {source}_id) ({target} {target}_id)) ${rel}_value)\n\n"
-
-        return output
-
     def _generate_metta_query(
         self,
         question: str,
@@ -553,84 +526,28 @@ class BioCypherPromptEngine:
         Returns:
             A database query that could answer the user's question.
         """
-      
-        # print("-"*20)
-        # print(f"All Entities: {self.entities}")
-        # print("-"*20)
-        # print(f"All Relationships: {self.relationships}")
-        # print("-"*20)
         e_props = {}
         for entity in self.selected_entities:
             if self.entities[entity].get("properties"):
                 e_props[entity] = list(
                     self.entities[entity]["properties"].keys()
                 )
-        # print(f"All Entity Props: {e_props}")
-        # print("-"*20)
         r_props = {}
         for relationship in self.selected_relationships:
             if self.relationships[relationship].get("properties"):
                 r_props[relationship] = list(
                     self.relationships[relationship]["properties"].keys()
                 )
-        # print(f"All Relationship Props: {r_props}")
-    
-        # print("%"*20)
 
-        # print(f"Selected Entities: {entities}")
-        # print(f"Selected Relationships Full: {relationships}")
-        # print(f"Selected Relationships: {list(relationships.keys())}")
-        # print(f"Selected Properties: {properties}")
+        print(f"Selected Entities: {entities}")
+        print(f"Selected Relationships Full: {relationships}")
+        print(f"Selected Relationships: {list(relationships.keys())}")
+        print(f"Selected Properties: {properties}")
         
-        sample_metta_string = self.generate_sample_metta_string(
-            entities=list(entities),
-            relationships=dict(relationships),
-            properties=dict(properties)
-        )
-
-        print(sample_metta_string)
-
-        msg = (
-            f"I have a datastore that follows this sample syntax:"
-            f"{sample_metta_string}\n"
-            f"The general pattern matching query should look like this for different user prompts..."
-            f"To get the properties and values for a certain entity with id 'entity_id':"
-            f"($property (entity entity_id) $value)\
-                ($property $value)"
-            f"To get the value of a certain relationship of a source and target entity:"
-            f"(value (relationship (source_entity source_entity_id) (target_entity target_entity_id)) $value)\
-                ($value)"
-            f"To get the list of all target entities of a relationship for a certain source entity:"
-            f"(relationship (source_entity source_entity_id) (target_entity $target))\
-                ($target)"
-            f"The specific pattern matching queries to GO(gene ontology) should look like this for different user prompts..."
-            f"To get properties of ontology term with $id:"
-            f"($prop (ontology_term $id ) $val)\
-                ($prop $val)"
-            f"To get ontology terms related to some $term_name and retrieve their ids, descriptions, and synonyms:"
-            f"(,\
-                    (term_name (ontology_term $id) $term_name)\
-                    (description (ontology_term $id) $description)\
-                    (synonyms (ontology_term $id) $synonyms)\
-                )\
-                    ($id $description $synonyms)"
-            f"To Retrieve ontology terms in specific sub_ontology $sub_ontology:"
-            f" (,\
-                    (subontology (ontology_term $id) $sub_ontology)\
-                    (term_name (ontology_term $id) $term_name)\
-                )\
-                    ($id $term_name)"
-            f""   
-            f"You should always look for the entity ids in the user's question and replace them in the query."
-            f"Any entity id in the form of 'entity_id' should not exist in the query."
-            f"If you don't find anything that resembles an 'id', you can put it as a variable (which has '$' in front of it) and\
-                add the variable to the return value like this:\
-                ($property (entity $entity_id) $value)\
-                ($property $value $entity_id)"
-            f"You can use the following entities: {entities}, "
-            f"relationships: {list(relationships.keys())}, and "
-            f"properties: {properties}."
-            f"Write a pattern matching query for the user's question"
+        msg = get_metta_prompt(
+            entities=entities,
+            relationships=relationships,
+            properties=properties
         )
 
         for relationship, values in relationships.items():
@@ -650,137 +567,6 @@ class BioCypherPromptEngine:
         out_msg, token_usage, correction = conversation.query(question)
 
         return out_msg.strip()
-    
-    def _generate_scheme_query(
-        self,
-        question: str,
-        entities: list,
-        relationships: dict,
-        properties: dict,
-        query_language: str,
-        conversation: "Conversation",
-    ) -> str:
-        """
-        Generate a query in the specified query language that answers the user's
-        question.
-
-        Args:
-            question: A user's question.
-
-            entities: A list of entities that are relevant to the question.
-
-            relationships: A list of relationships that are relevant to the
-                question.
-
-            properties: A dictionary of properties that are relevant to the
-                question.
-
-            query_language: The language of the query to generate.
-
-            conversation: A BioChatter Conversation object for connecting to the
-                LLM.
-
-        Returns:
-            A database query that could answer the user's question.
-        """
-      
-        # print("-"*20)
-        # print(f"All Entities: {self.entities}")
-        # print("-"*20)
-        # print(f"All Relationships: {self.relationships}")
-        # print("-"*20)
-        e_props = {}
-        for entity in self.selected_entities:
-            if self.entities[entity].get("properties"):
-                e_props[entity] = list(
-                    self.entities[entity]["properties"].keys()
-                )
-        # print(f"All Entity Props: {e_props}")
-        # print("-"*20)
-        r_props = {}
-        for relationship in self.selected_relationships:
-            if self.relationships[relationship].get("properties"):
-                r_props[relationship] = list(
-                    self.relationships[relationship]["properties"].keys()
-                )
-        # print(f"All Relationship Props: {r_props}")
-    
-        # print("%"*20)
-
-        # print(f"Selected Entities: {entities}")
-        # print(f"Selected Relationships Full: {relationships}")
-        # print(f"Selected Relationships: {list(relationships.keys())}")
-        # print(f"Selected Properties: {properties}")
-        
-        sample_metta_string = self.generate_sample_metta_string(
-            entities=list(entities),
-            relationships=dict(relationships),
-            properties=dict(properties)
-        )
-
-        print(sample_metta_string)
-
-        msg = (
-            f"I have a datastore that follows this sample syntax:"
-            f"{sample_metta_string}\n"
-            f"The general pattern matching query should look like this for different user prompts..."
-            f"To get the properties and values for a certain entity with id 'entity_id':"
-            f"($property (entity entity_id) $value)\
-                ($property $value)"
-            f"To get the value of a certain relationship of a source and target entity:"
-            f"(value (relationship (source_entity source_entity_id) (target_entity target_entity_id)) $value)\
-                ($value)"
-            f"To get the list of all target entities of a relationship for a certain source entity:"
-            f"(relationship (source_entity source_entity_id) (target_entity $target))\
-                ($target)"
-            f"The specific pattern matching queries to GO(gene ontology) should look like this for different user prompts..."
-            f"To get properties of ontology term with $id:"
-            f"($prop (ontology_term $id ) $val)\
-                ($prop $val)"
-            f"To get ontology terms related to some $term_name and retrieve their ids, descriptions, and synonyms:"
-            f" (,\
-                    (term_name (ontology_term $id) $term_name)\
-                    (description (ontology_term $id) $description)\
-                    (synonyms (ontology_term $id) $synonyms)\
-                )\
-                    ($id $description $synonyms)"
-            f"To Retrieve ontology terms in specific sub_ontology $sub_ontology:"
-            f" (,\
-                    (subontology (ontology_term $id) $sub_ontology)\
-                    (term_name (ontology_term $id) $term_name)\
-                )\
-                    ($id $term_name)"
-            f""   
-            f"You should always look for the entity ids in the user's question and replace them in the query."
-            f"Any entity id in the form of 'entity_id' should not exist in the query."
-            f"If you don't find anything that resembles an 'id', you can put it as a variable (which has '$' in front of it) and\
-                add the variable to the return value like this:\
-                ($property (entity $entity_id) $value)\
-                ($property $value $entity_id)"
-            f"You can use the following entities: {entities}, "
-            f"relationships: {list(relationships.keys())}, and "
-            f"properties: {properties}."
-            f"I'm thinking to get scheme pattern matching query and then convert them into a pattern matching query like tyhe examples above. So, Write a scheme pattern matching query for the user's question"
-        )
-
-        for relationship, values in relationships.items():
-            self._expand_pairs(relationship, values)
-
-        # if self.rel_directions:
-        #     msg += "Given the following valid combinations of source, relationship, and target: "
-        #     for key, value in self.rel_directions.items():
-        #         for pair in value:
-        #             msg += f"'(:{pair[0]})-(:{key})->(:{pair[1]})', "
-        #     msg += f"generate a {query_language} query using one of these combinations. "
-
-        msg += "Only return the query, without any additional text."
-
-        conversation.append_system_message(msg)
-
-        out_msg, token_usage, correction = conversation.query(question)
-
-        return out_msg.strip()
-
 
     def _expand_pairs(self, relationship, values) -> None:
         if not self.rel_directions.get(relationship):
