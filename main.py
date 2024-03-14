@@ -8,30 +8,26 @@ prompt_engine = BioCypherPromptEngine(
                     model_name="gpt-3.5-turbo",
                     schema_config_or_info_path="./biocypher_config/schema_config.yaml",
                 )
-# PubChem Atomspace queries
-# user_question="What is the name of the compound with id 'CID499989'?"
-# user_question="What is the unit value for the descriptor with id 'Molecular_Weight'?"
-# user_question = "What are the descriptor ids for the compound with id 'CID2499326'?"
-# user_question="What is the Exact_Mass descriptor of the compound with id 'CID2499326'? In this case you can take 'Exact_Mass' as the descriptor id"
-
-# Gene Ontology Atomspace queries:
+""" Gene Ontology Atomspace queries: """
 # user_question="What is the term name for the ontology term with ID 'GO:0000001'?"
 # user_question="Provide the description for the ontology term with ID 'GO:0000002'."
 # user_question="What are the synonyms for the ontology term with ID 'GO:0000005'?"
-# user_question="In which subontology does the ontology term with ID 'GO:0000011' belong?"
+# user_question="In which subontology does the ontology term with ID 'GO:0001654' belong?"
 # user_question="What is the source URL for the ontology term with ID 'GO:0000015'?"
 # user_question="What is the term name for the ontology term with ID 'GO:0000012'?"
-# user_question="Give the description for the ontology term with ID 'GO:0000981'."
+# user_question="Give the description for the ontology term with ID 'GO:0000785'."
 # user_question = "What is the subontology of the ontology term with ID 'GO:0000011'?"
-user_question = "Provide the term name and subontology for the ontology term with ID 'GO:0000785'." # ---
+# user_question = "Provide the term name and subontology for the ontology term with ID 'GO:0000785'." # ---
 # user_question = "What is the subontology of the ontology term with ID 'GO:0000015'?"
 # user_question = "Give me the term name and subontology for the ontology term with ID 'GO:0000028'."
 
 # Questions from Metta-Motto
-# user_question = "Find the transcripts of gene ENSG00000206014"
+# user_question = "What are the transcripts of gene ENSG00000237491"
 # user_question = "Get properties of gene ENSG00000279139"
 # user_question = "Find pathways that gene F13A1 is a subset of"
+user_question = "Find parent pathways of the pathways that the gene named 'FGR' is a subset of?"
 # user_question = "Find parent pathways of the pathways that FGR  gene is a subset of"
+
 # user_question = "What variants have eqtl association with gene HBM"
 # user_question = "What variants have eqtl association with gene ENSG00000206177"
 
@@ -78,6 +74,6 @@ conversation.set_api_key(
     api_key=os.getenv("OPENAI_API_KEY"), user="query_interactor"
 )
 
-out_msg, token_usage, correction = conversation.query(f"present the following result '{query_result}' for the following query '{user_question}' in a natural language if result is present  ")
+# out_msg, token_usage, correction = conversation.query(f"present the following result '{query_result}' for the following query '{user_question}' in a natural language if result is present  ")
 
-print("\nLLM Response:\n\n", out_msg)
+# print("\nLLM Response:\n\n", out_msg)
