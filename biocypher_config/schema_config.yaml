@@ -11,7 +11,7 @@ gene:
     chr: str
     start: int
     end: int
-    name: str
+    gene_name: str
     gene_type: str
     synonyms: str[]
     source: str
