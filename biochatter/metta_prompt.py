@@ -11,27 +11,27 @@ class MettaPrompt:
         if not self.schema_nodes:
             return ''
         
-        msg = "\nThe following are the representations of the nodes in the dataset: \n###\n"
+        metta_node_sample = "\nThe following are the representations of the nodes in the dataset: \n###\n"
 
-        for input_label, properties in self.schema_nodes.items():
-            msg += f"; This is the format of the nodes for '{input_label}': \n"
-            msg += f"({input_label} <{input_label}_id>)\n"
+        for node_label, properties in self.schema_nodes.items():
+            metta_node_sample += f"; This is the format of the nodes for '{node_label}': \n"
+            metta_node_sample += f"({node_label} <{node_label}_id>)\n"
             for prop, prop_type in properties.items():
                 # Skip propeties that are not usually mapped to the MeTTa files
                 if prop in ['source', 'source_url', 'version']:
                     continue
-                msg += f"({prop} ({input_label} <{input_label}_id>) <value_of_type_{prop_type}>)\n"
+                metta_node_sample += f"({prop} ({node_label} <{node_label}_id>) <value_of_type_{prop_type}>)\n"
     
-        msg += "### \n"
-        return msg
+        metta_node_sample += "### \n"
+        return metta_node_sample
 
     def generate_metta_edge_samples(self):
         if not self.schema_edges:
             return ''
         
-        msg = "\nThe following are the representations of the edges in the dataset: \n###\n"
+        metta_edge_sample = "\nThe following are the representations of the edges in the dataset: \n###\n"
 
-        for input_label, attributes in self.schema_edges.items():
+        for edge_label, attributes in self.schema_edges.items():
             source = attributes['source']
             target = attributes['target']
             properties = attributes['properties']
@@ -39,86 +39,121 @@ class MettaPrompt:
             description = attributes.get('description', None)
             full_name = attributes.get('full_name', None)
 
-            if full_name: msg += f"; The name '{input_label}' is just a short form of \"{full_name}\". \n"
-            if description: msg += f"; The relationship '{input_label}' would be described as: \"{description}\". \n"
-            msg += f"; These is the format of the edges for '{input_label}': \n"
-            msg += f"({input_label} ({source} <{source}_id>) ({target} <{target}_id>))"
+            if full_name: metta_edge_sample += f"; The name '{edge_label}' is just a short form of \"{full_name}\". \n"
+            if description: metta_edge_sample += f"; The relationship '{edge_label}' would be described as: \"{description}\". \n"
+            metta_edge_sample += f"; These is the format of the edges for '{edge_label}': \n"
+            metta_edge_sample += f"({edge_label} ({source} <{source}_id>) ({target} <{target}_id>))\n"
             for prop, prop_type in properties.items():
                 # Skip propeties that are not usually mapped to the MeTTa files
                 if prop in ['source', 'source_url', 'version']:
                     continue
-                msg += f"({prop} ({input_label} ({source} <{source}_id>) ({target} <{target}_id>)) <value_of_type_{prop_type}>)\n"
+                metta_edge_sample += f"({prop} ({edge_label} ({source} <{source}_id>) ({target} <{target}_id>)) <value_of_type_{prop_type}>)\n"
     
-        msg += "### \n"
-        return msg
+        metta_edge_sample += "### \n"
+        return metta_edge_sample
+    
+    def generate_metta_node_query_samples(self):
+        if not self.schema_nodes:
+            return ''
+        
+        node_query_samples = "\nThe following are sample queries for the nodes in the dataset: \n***\n"
 
+        for node_label, properties in self.schema_nodes.items():
+            node_query_samples += f"\n; Get properties of a '{node_label}' with some id <{node_label}_id>: \n\
+                                        ($prop ({node_label} <{node_label}_id>) $val)\n\
+                                        ($prop $val)\n"
+
+            for prop, _ in properties.items():
+                # Skip propeties that are not usually mapped to the MeTTa files
+                if prop in ['source', 'source_url', 'version']:
+                    continue
+
+                node_query_samples += f"\n; Get the '{prop}' property of some '{node_label}' with id <{node_label}_id>: \n\
+                                            ({prop} ({node_label} <{node_label}_id>) $val)\n\
+                                            ($val)\n"
+
+                node_query_samples += f"\n; Get the properties of a '{node_label}' with '{prop}' of <some_{prop}_val>: \n\
+                                            (,\n\
+                                             ({prop} ({node_label} $id) <some_{prop}_val>)\n\
+                                             ($prop ({node_label} $id) $val)\n\
+                                            )\n\
+                                            ($prop $val)\n"
+    
+        node_query_samples += "*** \n"
+        return node_query_samples
+
+    def generate_metta_edge_query_samples(self):
+        if not self.schema_edges:
+            return ''
+        
+        edge_query_samples = "\nThe following are sample queries for the edges in the dataset: \n***\n"
+
+        for edge_label, attributes in self.schema_edges.items():
+            source = attributes['source']
+            target = attributes['target']
+            properties = attributes['properties']
+
+            edge_query_samples += f"; Find the '{target} nodes' of the '{source}' with id <{source}_id>:\n\
+                                    ({edge_label} ({source} <{source}_id>) ${target}_node)\n\
+                                    (${target}_node)\n"
+
+            for prop, prop_type in properties.items():
+                # Skip propeties that are not usually mapped to the MeTTa files
+                if prop in ['source', 'source_url', 'version']:
+                    continue
+
+                edge_query_samples += f"; Find the '{target} nodes' of a '{source}' with '{prop}' of <some_{prop}_val>:\n\
+                                        (,\n\
+                                         ({prop} ({source} $id) <some_{prop}_val>)\n\
+                                         ({edge_label} ({source} $id) ${target}_node)\n\
+                                        )\n\
+                                        (${target}_node)\n"
+
+        edge_query_samples += "*** \n"
+        return edge_query_samples
 
     def get_metta_prompt(self) -> str:
 
-        metta_nodes = self.generate_metta_node_samples()
-        metta_edges = self.generate_metta_edge_samples()
+        metta_node_samples = self.generate_metta_node_samples()
+        metta_edge_samples = self.generate_metta_edge_samples()
+
+        metta_node_query_samples = self.generate_metta_node_query_samples()
+        metta_edge_query_samples = self.generate_metta_edge_query_samples()
         
         prompt = (
             f"I have a dataset for storing biology data using a lisp style syntax."
             f"The dataset is classified into 'nodes' and 'edges' as follows:"
-            f"{metta_nodes}\n"
-            f"{metta_edges}\n"
+            f"{metta_node_samples}\n"
+            f"{metta_edge_samples}\n"
+
             f"You will generate Scheme-like queries for this dataset that will answer the user's question."
-            f"You can refer to the following examples to construct the queries:"
-
-            f"""
-                ;Get properties of #ENTITY #ENTITY_ID
-                ***
-                    ($prop (#ENTITY #ENTITY_ID) $val)
-                    ($prop $val)
-                ***
-
-                ;Get properties of #ENTITY with some #PROPERTY_NAME with #PROPERTY_VALUE
-                ***
-                    (,
-                        (#PROPERTY_VALUE (#ENTITY #ENTITY_ID) #PROPERTY_NAME)
-                        ($prop (#ENTITY #ENTITY_ID) $val)
-                    )
-                    ($prop $val)
-                ***
-
-                ;Find the a #RELATIONSHIP of some #ENTITY #ENTITY_ID
-                ***
-                    (#RELATIONSHIP (#ENTITY #ENTITY_ID) $#ENTITY)
-                    $#ENTITY
-                ***
-
-                ;Find #ENTITY-1 who has a #RELATIONSHIP with #ENTITY-2 with #PROPERTY_NAME #PROPERTY_VALUE
-                ***
-                    (,
-                        (#PROPERTY_NAME (#ENTITY-2 $var) #PROPERTY_VALUE)
-                        (#RELATIONSHIP (#ENTITY-2 $var) $#ENTITY-1)
-                    )
-                    $#ENTITY-1
-                ***
-
-            """
+            f"The query will have two outer parenthesis. The first one will contain the pattern matching query\
+                on the dataset, and the second one will contain the variables to be returned by the query."
+            f"You can refer to the following examples for constructing the queries:"
+            f"{metta_node_query_samples}\n"
+            f"{metta_edge_query_samples}\n"
 
             f"Everything between the three hashtags (### .... ###) is the exact format of the dataset."
             f"Everything between the three asterisks (*** .... ***) is a query."
-            f"Everything between angle brackets (<..>) is a variable that should either be replaced by what is found in \
-                the user's question or should be pattern matched and returned back to the user."
+            f"Everything between angle brackets (<..>) is a variable that should either be replaced with the appropriate\
+                'id' or 'value' found in the user's question or should be replaced with a vairable to be returned by the query."
+            f"The word after the dollar sign ($) is a variable that can replace values that aren't provided by the user or\
+                unknown values that are requested by the user."
 
-            # f"You must replace #ENTITY with one of these entity terms: {self.entities}, "
-            # f"You must replace #RELATIONSHIP with one of these relationship terms: {list(self.relationships.keys())}, and "
-            # f"You must replace #PROPERTY_NAME with one of these property name terms: {self.properties}."
+            # f"You may only use these entity terms: {self.entities}, "
+            # f"You may only use these relationship terms: {list(self.relationships.keys())}, and "
+            # f"You may only use these property name terms: {self.properties}."
 
-            f"#PROPERTY_VALUE is the value for the #PROPERTY_NAME and should be provided in the user's question"
-            f"You should always look for the #ENTITY_ID or #PROPERTY_VALUE in the user's question."
-            f"The #ENTITY_ID or #PROPERTY_VALUE must not be surrounded with quoted in the query."
+            # f"#PROPERTY_VALUE is the value for the #PROPERTY_NAME and should be provided in the user's question"
+            # f"You should always look for the #ENTITY_ID or #PROPERTY_VALUE in the user's question."
+            # f"The #ENTITY_ID or #PROPERTY_VALUE must not be surrounded with quoted in the query."
 
-            f"If you think any matching entity, relationship or property is missing from the lists I gave you or from the user's question,\
-                you can represent them as a variable in the query like this: $entity | $entity_id | $relationship | $property_name | $property_value"
-            f"If you don't find anything that matches the #ENTITY_ID or #PROPERTY_VALUE, you can represent them as variables in the query\
-                like this: $entity_id | $property_value"
+            # f"If you think any matching entity, relationship or property is missing from the lists I gave you or from the user's question,\
+            #     you can represent them as a variable in the query like this: $entity | $entity_id | $relationship | $property_name | $property_value"
+            # f"If you don't find anything that matches the #ENTITY_ID or #PROPERTY_VALUE, you can represent them as variables in the query\
+            #     like this: $entity_id | $property_value"
 
-            f"You should always "
-            f"Based on the information given to you above, you will write a pattern matching query for the user's question"
+            f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
 
         return prompt
