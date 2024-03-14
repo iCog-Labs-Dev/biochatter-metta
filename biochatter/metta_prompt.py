@@ -139,6 +139,7 @@ class MettaPrompt:
                 'id' or 'value' found in the user's question or should be replaced with a vairable to be returned by the query."
             f"The word after the dollar sign ($) is a variable that can replace values that aren't provided by the user or\
                 unknown values that are requested by the user."
+            f"The 'id' or 'value' you find in the user's question should be treated as symbols and must not be wrapped in quotes."
 
             # f"You may only use these entity terms: {self.entities}, "
             # f"You may only use these relationship terms: {list(self.relationships.keys())}, and "
