@@ -5,7 +5,7 @@ import os
 from ._misc import ensure_iterable, sentencecase_to_snakecase, sentencecase_to_pascalcase
 from .llm_connect import Conversation, GptConversation
 
-from .metta_prompt import get_metta_prompt, generate_sample_metta_string
+from .metta_prompt import MettaPrompt
 
 
 class BioCypherPromptEngine:
@@ -126,6 +126,9 @@ class BioCypherPromptEngine:
         # dictionary to also include source and target types
         self.rel_directions = {}
         self.model_name = model_name
+
+        self.selected_schema_nodes = {}
+        self.selected_schema_edges = {}
 
     def _capitalise_source_and_target(self, relationship: dict) -> dict:
         """
@@ -275,6 +278,9 @@ class BioCypherPromptEngine:
                 entity = entity.strip()
                 if entity in self.entities:
                     self.selected_entities.append(entity.lower())
+                    # Add the selected node and its properties to a dictionary
+                    input_label = sentencecase_to_snakecase(self.entities[entity]['input_label'])
+                    self.selected_schema_nodes[input_label] = self.entities[entity]['properties']
 
         return bool(result)
 
@@ -407,6 +413,19 @@ class BioCypherPromptEngine:
                             "source": None,
                             "target": None,
                         }
+                    
+                    # Add the selected node and its properties to a dictionary
+                    input_label = sentencecase_to_snakecase(self.relationships[relationship]['input_label'])
+                    self.selected_schema_edges[input_label] = {
+                        'source' : self.relationships[relationship]['source'],
+                        'target' : self.relationships[relationship]['target'],
+                        'description' : self.relationships[relationship]['description'],
+                        'properties' : self.relationships[relationship]['properties']
+                    }
+
+                    # Add the full name of the relationship in the cases where the input_label is abbreviated
+                    if not (input_label == relationship):
+                        self.selected_schema_edges[input_label]['full_name'] = relationship
 
         # if we selected relationships that have either source or target which
         # is not in the selected entities, we add those entities to the selected
@@ -544,11 +563,15 @@ class BioCypherPromptEngine:
         print(f"Selected Relationships: {list(relationships.keys())}")
         print(f"Selected Properties: {properties}")
         
-        msg = get_metta_prompt(
+        metta_prompt = MettaPrompt(
             entities=entities,
             relationships=relationships,
-            properties=properties
+            properties=properties,
+            schema_nodes=self.selected_schema_nodes,
+            schema_edges=self.selected_schema_edges
         )
+
+        msg = metta_prompt.get_metta_prompt()
 
         for relationship, values in relationships.items():
             self._expand_pairs(relationship, values)
