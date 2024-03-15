@@ -189,20 +189,22 @@ class BioCypherPromptEngine:
                 "Relationship selection failed. Please try again with a "
                 "different question."
             )
-        success3 = self._select_properties(
-            conversation=self.conversation_factory()
-        )
-        if not success3:
-            raise ValueError(
-                "Property selection failed. Please try again with a different "
-                "question."
-            )
+        
+        # We don't need to select specific properties (we can just take all into account)
+        # success3 = self._select_properties(
+        #     conversation=self.conversation_factory()
+        # )
+        # if not success3:
+        #     raise ValueError(
+        #         "Property selection failed. Please try again with a different "
+        #         "question."
+        #     )
 
         return self._generate_metta_query(
                 question=question,
                 entities=self.selected_entities,
                 relationships=self.selected_relationship_labels,
-                properties=self.selected_properties,
+                # properties=self.selected_properties,
                 query_language=query_language,
                 conversation=self.conversation_factory(),
             )
@@ -420,7 +422,7 @@ class BioCypherPromptEngine:
                         'source' : self.relationships[relationship]['source'],
                         'target' : self.relationships[relationship]['target'],
                         'description' : self.relationships[relationship]['description'],
-                        'properties' : self.relationships[relationship]['properties']
+                        'properties' : self.relationships[relationship].get('properties', {})
                     }
 
                     # Add the full name of the relationship in the cases where the input_label is abbreviated
@@ -518,7 +520,7 @@ class BioCypherPromptEngine:
         question: str,
         entities: list,
         relationships: dict,
-        properties: dict,
+        # properties: dict,
         query_language: str,
         conversation: "Conversation",
     ) -> str:
@@ -561,12 +563,12 @@ class BioCypherPromptEngine:
         print(f"Selected Entities: {entities}")
         print(f"Selected Relationships Full: {relationships}")
         print(f"Selected Relationships: {list(relationships.keys())}")
-        print(f"Selected Properties: {properties}")
+        # print(f"Selected Properties: {properties}")
         
         metta_prompt = MettaPrompt(
-            entities=entities,
-            relationships=relationships,
-            properties=properties,
+            # entities=entities,
+            # relationships=relationships,
+            # properties=properties,
             schema_nodes=self.selected_schema_nodes,
             schema_edges=self.selected_schema_edges
         )

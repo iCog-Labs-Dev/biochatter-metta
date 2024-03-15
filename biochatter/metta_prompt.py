@@ -1,9 +1,9 @@
 class MettaPrompt:
 
-    def __init__(self, entities, relationships, properties, schema_nodes, schema_edges) -> None:
-        self.entities = entities
-        self.relationships = relationships
-        self.properties = properties
+    def __init__(self, schema_nodes, schema_edges) -> None:
+        # self.entities = entities
+        # self.relationships = relationships
+        # self.properties = properties
         self.schema_nodes = schema_nodes
         self.schema_edges = schema_edges
 
