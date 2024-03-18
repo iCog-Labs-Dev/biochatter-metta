@@ -591,7 +591,9 @@ class BioCypherPromptEngine:
 
         out_msg, token_usage, correction = conversation.query(question)
 
-        return out_msg.strip()
+        print(out_msg)
+
+        return out_msg.replace("`","").strip()
 
     def _expand_pairs(self, relationship, values) -> None:
         if not self.rel_directions.get(relationship):
