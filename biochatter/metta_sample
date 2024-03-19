@@ -1,0 +1,233 @@
+***
+
+; Get properties of a 'ontology_term' with some id <ontology_term_id>: 
+                                        ($prop (ontology_term <ontology_term_id>) $val)
+                                        ($prop $val)
+
+; Get the 'term_name' property of some 'ontology_term' with id <ontology_term_id>: 
+                                            (term_name (ontology_term <ontology_term_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'ontology_term' with 'term_name' of <some_term_name_val>: 
+                                            (,
+                                             (term_name (ontology_term $id) <some_term_name_val>)
+                                             ($prop (ontology_term $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'description' property of some 'ontology_term' with id <ontology_term_id>: 
+                                            (description (ontology_term <ontology_term_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'ontology_term' with 'description' of <some_description_val>: 
+                                            (,
+                                             (description (ontology_term $id) <some_description_val>)
+                                             ($prop (ontology_term $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'synonyms' property of some 'ontology_term' with id <ontology_term_id>: 
+                                            (synonyms (ontology_term <ontology_term_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'ontology_term' with 'synonyms' of <some_synonyms_val>: 
+                                            (,
+                                             (synonyms (ontology_term $id) <some_synonyms_val>)
+                                             ($prop (ontology_term $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'subontology' property of some 'ontology_term' with id <ontology_term_id>: 
+                                            (subontology (ontology_term <ontology_term_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'ontology_term' with 'subontology' of <some_subontology_val>: 
+                                            (,
+                                             (subontology (ontology_term $id) <some_subontology_val>)
+                                             ($prop (ontology_term $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'subset' property of some 'ontology_term' with id <ontology_term_id>: 
+                                            (subset (ontology_term <ontology_term_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'ontology_term' with 'subset' of <some_subset_val>: 
+                                            (,
+                                             (subset (ontology_term $id) <some_subset_val>)
+                                             ($prop (ontology_term $id) $val)
+                                            )
+                                            ($prop $val)
+*** 
+
+
+; Get properties of a 'gene' with some id <gene_id>: 
+                                        ($prop (gene <gene_id>) $val)
+                                        ($prop $val)
+
+; Get the 'chr' property of some 'gene' with id <gene_id>: 
+                                            (chr (gene <gene_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'gene' with 'chr' of <some_chr_val>: 
+                                            (,
+                                             (chr (gene $id) <some_chr_val>)
+                                             ($prop (gene $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'start' property of some 'gene' with id <gene_id>: 
+                                            (start (gene <gene_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'gene' with 'start' of <some_start_val>: 
+                                            (,
+                                             (start (gene $id) <some_start_val>)
+                                             ($prop (gene $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'end' property of some 'gene' with id <gene_id>: 
+                                            (end (gene <gene_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'gene' with 'end' of <some_end_val>: 
+                                            (,
+                                             (end (gene $id) <some_end_val>)
+                                             ($prop (gene $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'gene_name' property of some 'gene' with id <gene_id>: 
+                                            (gene_name (gene <gene_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'gene' with 'gene_name' of <some_gene_name_val>: 
+                                            (,
+                                             (gene_name (gene $id) <some_gene_name_val>)
+                                             ($prop (gene $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'gene_type' property of some 'gene' with id <gene_id>: 
+                                            (gene_type (gene <gene_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'gene' with 'gene_type' of <some_gene_type_val>: 
+                                            (,
+                                             (gene_type (gene $id) <some_gene_type_val>)
+                                             ($prop (gene $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'synonyms' property of some 'gene' with id <gene_id>: 
+                                            (synonyms (gene <gene_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'gene' with 'synonyms' of <some_synonyms_val>: 
+                                            (,
+                                             (synonyms (gene $id) <some_synonyms_val>)
+                                             ($prop (gene $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get properties of a 'pathway' with some id <pathway_id>: 
+                                        ($prop (pathway <pathway_id>) $val)
+                                        ($prop $val)
+
+; Get the 'id_version' property of some 'pathway' with id <pathway_id>: 
+                                            (id_version (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'id_version' of <some_id_version_val>: 
+                                            (,
+                                             (id_version (pathway $id) <some_id_version_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'name' property of some 'pathway' with id <pathway_id>: 
+                                            (name (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'name' of <some_name_val>: 
+                                            (,
+                                             (name (pathway $id) <some_name_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'is_in_disease' property of some 'pathway' with id <pathway_id>: 
+                                            (is_in_disease (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'is_in_disease' of <some_is_in_disease_val>: 
+                                            (,
+                                             (is_in_disease (pathway $id) <some_is_in_disease_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'name_aliases' property of some 'pathway' with id <pathway_id>: 
+                                            (name_aliases (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'name_aliases' of <some_name_aliases_val>: 
+                                            (,
+                                             (name_aliases (pathway $id) <some_name_aliases_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'species' property of some 'pathway' with id <pathway_id>: 
+                                            (species (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'species' of <some_species_val>: 
+                                            (,
+                                             (species (pathway $id) <some_species_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'disease_ontology_terms' property of some 'pathway' with id <pathway_id>: 
+                                            (disease_ontology_terms (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'disease_ontology_terms' of <some_disease_ontology_terms_val>: 
+                                            (,
+                                             (disease_ontology_terms (pathway $id) <some_disease_ontology_terms_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'go_biological_process' property of some 'pathway' with id <pathway_id>: 
+                                            (go_biological_process (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'go_biological_process' of <some_go_biological_process_val>: 
+                                            (,
+                                             (go_biological_process (pathway $id) <some_go_biological_process_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+
+; Get the 'is_top_level_pathway' property of some 'pathway' with id <pathway_id>: 
+                                            (is_top_level_pathway (pathway <pathway_id>) $val)
+                                            ($val)
+
+; Get the properties of a 'pathway' with 'is_top_level_pathway' of <some_is_top_level_pathway_val>: 
+                                            (,
+                                             (is_top_level_pathway (pathway $id) <some_is_top_level_pathway_val>)
+                                             ($prop (pathway $id) $val)
+                                            )
+                                            ($prop $val)
+*** 
+
+
+The following are sample queries for the edges in the dataset: 
+***
+; Find the 'pathway nodes' of the 'pathway' with id <pathway_id>:
+                                    (parent_pathway_of (pathway <pathway_id>) $pathway_node)
+                                    ($pathway_node)
+*** 

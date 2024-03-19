@@ -6,6 +6,8 @@ class MettaPrompt:
         # self.properties = properties
         self.schema_nodes = schema_nodes
         self.schema_edges = schema_edges
+        # print(self.schema_edges)
+        # print(self.schema_nodes)
 
     def generate_metta_node_samples(self) -> str:
         if not self.schema_nodes:
@@ -119,6 +121,8 @@ class MettaPrompt:
 
         metta_node_query_samples = self.generate_metta_node_query_samples()
         metta_edge_query_samples = self.generate_metta_edge_query_samples()
+        # print(metta_edge_query_samples)
+        # print(metta_node_query_samples)
         
         prompt = (
             f"I have a dataset for storing biology data using a lisp style syntax."
@@ -132,14 +136,49 @@ class MettaPrompt:
             f"You can refer to the following examples for constructing the queries:"
             f"{metta_node_query_samples}\n"
             f"{metta_edge_query_samples}\n"
+            
 
+            f"Example queries that are given above contain both complex and simple queries. Examples that start with ',' are complex queries those that don't contains ',' are simple queries."
+            f"Complex queries propagate variable values through expression from the top to the bottom. for example let's look at the below complex query\n\
+                  (,\n\
+                        (gene_name (gene $ens) <some_gene_name_value>)\n\
+                        (transcribed_to (gene $ens) $transcript)\n\
+                        (translates_to $transcript $protein)\n\
+                        (go_gene_product $ontology $protein)\n\
+                        (subontology $ontology <some_subontology_val>)\n\
+                    )\n\
+                    ($ontology)\n\
+            from '(gene_name (gene $ens) <some_gene_name_value>)' expression, the value $ens will be retrived and will be passed to '(transcribed_to (gene $ens) $transcript)'.\
+            The same way, from '(transcribed_to (gene $ens) $transcript)' the value of $transcript will be retrived and will be passed to '(translates_to $transcript $protein)'.\
+            Again, from '(translates_to $transcript $protein)' $protien will be retrieved and will be passed to '(go_gene_product $ontology $protein)'.\
+            Finally, from '(go_gene_product $ontology $protein)', $ontology will be retrieved and will be passed to '(subontology $ontology <some_subontology_val>)'. At the end value of $ ontology will be returned."
+            f"Simple queries just pattern match a single experession and then return the result. Let's look at one example\n\
+                (\n\
+                        go_gene_product $ontology (protein <some_protien_name_value>)\n\
+                    )\n\
+                    ($ontology)\n\
+            The above example just pattern match the given expression and return the value of $ontology."
             f"Everything between the three hashtags (### .... ###) is the exact format of the dataset."
             f"Everything between the three asterisks (*** .... ***) is a query."
             f"Everything between angle brackets (<..>) is a variable that should either be replaced with the appropriate\
-                'id' or 'value' found in the user's question or should be replaced with a vairable to be returned by the query."
+                'id' or 'value' found in the user's question or should be replaced with a vairable to be returned by the query."\
+            f"For example, let's look at some user questions and their corresponding query.\
+                'Give the description for the ontology term with ID 'GO:0000785''.\
+            for the above user question, the below query can be generated\n\
+                (description (ontology_term GO:0000785) $val)\n\
+                 ($val)\n\
+            let's look at other user question that requires complex query to be genrated.\
+            'Find all properties of genes that belong into biological process subontology.'\n\
+            (,\n\
+                (subontology (ontology_term $id) biological_process)\n\
+                ($prop (ontology_term $id) $val)\n\
+                )\n\
+                ($prop $val)\n\
+            "
             f"The word after the dollar sign ($) is a variable that can replace values that aren't provided by the user or\
                 unknown values that are requested by the user."
             f"The 'id' or 'value' you find in the user's question should be treated as symbols and must not be wrapped in quotes."
+            f"Return only query,  no explanation and other texts"
 
             # f"You may only use these entity terms: {self.entities}, "
             # f"You may only use these relationship terms: {list(self.relationships.keys())}, and "
@@ -156,7 +195,7 @@ class MettaPrompt:
 
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
-
+        print(prompt)
         return prompt
 
 
