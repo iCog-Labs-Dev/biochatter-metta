@@ -11,10 +11,10 @@ prompt_engine = BioCypherPromptEngine(
 """ Gene Ontology Atomspace queries: """
 # user_question="What is the term name for the ontology term with ID 'GO:0000001'?"
 # user_question="Provide the description for the ontology term with ID 'GO:0000002'."
-# user_question="What are the synonyms for the ontology term with ID 'GO:0000005'?"
+# user_question="What are the synonyms for the ontology term with ID 'GO:0002088'?"
 # user_question="In which subontology does the ontology term with ID 'GO:0001654' belong?"
 # user_question="What is the source URL for the ontology term with ID 'GO:0000015'?"
-# user_question="What is the term name for the ontology term with ID 'GO:0000012'?"
+# user_question="What is the term name for the ontology term with ID 'GO:0000981'?"
 # user_question="Give the description for the ontology term with ID 'GO:0000785'."
 # user_question = "What is the subontology of the ontology term with ID 'GO:0000011'?"
 # user_question = "Provide the term name and subontology for the ontology term with ID 'GO:0000785'." # ---
@@ -25,11 +25,11 @@ prompt_engine = BioCypherPromptEngine(
 # user_question = "What are the transcripts of gene ENSG00000237491"
 # user_question = "Get properties of gene ENSG00000279139"
 # user_question = "Find pathways that gene F13A1 is a subset of"
-user_question = "Find parent pathways of the pathways that the gene named 'FGR' is a subset of?"
+# user_question = "Find parent pathways of the pathways that the gene named 'FGR' is a subset of?"
 # user_question = "Find parent pathways of the pathways that FGR  gene is a subset of"
 
 # user_question = "What variants have eqtl association with gene HBM"
-# user_question = "What variants have eqtl association with gene ENSG00000206177"
+user_question = "What variants have eqtl association with gene ENSG00000206177"
 
 # llm_generated_scheme_query = prompt_engine.generate_query(user_question, "scheme")
 # print("\nLLM Generated Scheme Query:\n", llm_generated_scheme_query)
@@ -59,6 +59,7 @@ metta_sample = f"""\
 
 {str(metta_query).strip()}
 """
+
 
 query_result = metta.run(metta_sample)
 print("\nMeTTa output:\n\n", query_result)
