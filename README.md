@@ -28,7 +28,7 @@ This repo contains an implementation of **Natural Language Prompt** to **MeTTa Q
     ```
 
 ### Repository structure:
+- `bioatomspace_data_subset/` : Contains the sample MeTTa files from the Human BioAtomspace.
 - `biochatter/` : Contains the [BioChatter](https://github.com/biocypher/biochatter) package for converting NL prompts to MeTTa queries.
 - `biocypher_config/` : Contains the BioCypher schema configuration files.
-- `metta_out/` : Contains the sample MeTTa files used as a knowledge base.
 - `main.py` : This is the main module that imports the BioChatter package.
