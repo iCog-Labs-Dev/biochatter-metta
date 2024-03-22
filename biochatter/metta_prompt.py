@@ -1,13 +1,8 @@
 class MettaPrompt:
 
     def __init__(self, schema_nodes, schema_edges) -> None:
-        # self.entities = entities
-        # self.relationships = relationships
-        # self.properties = properties
         self.schema_nodes = schema_nodes
         self.schema_edges = schema_edges
-        # print(self.schema_edges)
-        # print(self.schema_nodes)
 
     def generate_metta_node_samples(self) -> str:
         if not self.schema_nodes:
@@ -121,8 +116,6 @@ class MettaPrompt:
 
         metta_node_query_samples = self.generate_metta_node_query_samples()
         metta_edge_query_samples = self.generate_metta_edge_query_samples()
-        # print(metta_edge_query_samples)
-        # print(metta_node_query_samples)
         
         prompt = (
             f"I have a dataset for storing biology data using a lisp style syntax."
@@ -179,153 +172,6 @@ class MettaPrompt:
                 unknown values that are requested by the user."
             f"The 'id' or 'value' you find in the user's question should be treated as symbols and must not be wrapped in quotes."
             f"Return only query,  no explanation and other texts"
-
-            # f"You may only use these entity terms: {self.entities}, "
-            # f"You may only use these relationship terms: {list(self.relationships.keys())}, and "
-            # f"You may only use these property name terms: {self.properties}."
-
-            # f"#PROPERTY_VALUE is the value for the #PROPERTY_NAME and should be provided in the user's question"
-            # f"You should always look for the #ENTITY_ID or #PROPERTY_VALUE in the user's question."
-            # f"The #ENTITY_ID or #PROPERTY_VALUE must not be surrounded with quoted in the query."
-
-            # f"If you think any matching entity, relationship or property is missing from the lists I gave you or from the user's question,\
-            #     you can represent them as a variable in the query like this: $entity | $entity_id | $relationship | $property_name | $property_value"
-            # f"If you don't find anything that matches the #ENTITY_ID or #PROPERTY_VALUE, you can represent them as variables in the query\
-            #     like this: $entity_id | $property_value"
-
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
-        print(prompt)
         return prompt
-
-
-
-
-    
-"""
-
-                ;Find the Gene Ontology (GO) categories associated with protein A6NIX2
-                (match &space
-                    (
-                        go_gene_product $ontology (protein A6NIX2)
-                    )
-                    $ontology
-                )
-
-                ;Find the  Gene Ontology (GO) categories associated with gene ENSG00000177508
-                (match &space
-                    (,
-                        (transcribed_to (gene ENSG00000177508) $transcript)
-                        (translates_to $transcript $protein)
-                        (go_gene_product $ontology $protein)
-                    )
-                    $ontology
-                )
-
-                ;Find biological process GO categories associated with gene FNIP2 (use the gene HGNC symbol instead of ensembl id)
-                (match &space
-                    (,
-                        (gene_name (gene $ens) FNIP2)
-                        (transcribed_to (gene $ens) $transcript)
-                        (translates_to $transcript $protein)
-                        (go_gene_product $ontology $protein)
-                        (subontology $ontology biological_process)
-                    )
-                    $ontology
-                )
-
-                ;Find pathways that gene ENSG00000177508 is a subset of
-                (match &space
-                    (genes_pathways (gene ENSG00000177508) $p)
-                    $p
-                )
-
-                ;Find pathways that gene IRX3 is a subset of (use the gene HGNC symbol instead of ensembl id)
-                (match &space
-                    (,
-                        (gene_name (gene $ens) IRX3)
-                        (genes_pathways (gene $ens) $p)
-                    )
-                    $p
-                )
-
-                ;Find parent pathways of the pathways that gene TFAP2A is a subset of (use the gene HGNC symbol instead of ensembl id)
-                (match &space
-                    (,
-                        (gene_name (gene $ens) TFAP2A)
-                        (genes_pathways (gene $ens) $p1)
-                        (parent_pathway_of $p2 $p1)
-                    )
-                    $p2
-                )
-
-                ;What variants have eqtl association with gene IRX3 (use the gene HGNC symbol instead of ensembl id)
-                (match &space
-                    (,
-                        (gene_name (gene $ens) IRX3)
-                        (eqtl $seq (gene $ens))
-                    )
-                    $seq
-                )
-
-                ;What variants have eqtl association with gene POLR3K (use the gene HGNC symbol instead of ensembl id)
-                (match &space
-                    (,
-                        (gene_name (gene $ens) POLR3K)
-                        (eqtl $seq (gene $ens))
-                    )
-                    $seq
-                )
-
-                ;What variants have eqtl association with gene IRX3 (use the gene HGNC symbol instead of ensembl id) and return the properties of the association
-                (match &space
-                    (,
-                        (gene_name  $ens IRX3)
-                        (eqtl $seq $ens)
-                        ($prop (eqtl $seq $ens) $val)
-                    )
-                    ($prop (eqtl $seq $ens) $val)
-                )
-
-                ;What variants have eqtl association with gene ENSG00000170540 and return the properties of the association
-                (match &space
-                    (,
-                        (eqtl $seq (gene ENSG00000170540))
-                        ($prop (eqtl $seq (gene ENSG00000170540)) $val)
-                    )
-                    ($prop (eqtl $seq (gene ENSG00000170540)) $val)
-                )
-
-
-                ;Find molecular function Gene Ontology (GO) categories associated with gene FLRT2 (use the gene HGNC symbol instead of ensembl id)
-                (match &space
-                    (,
-                        (gene_name (gene $ens) FLRT2)
-                        (transcribed_to (gene $ens) $transcript)
-                        (translates_to $transcript $protein)
-                        (go_gene_product $ontology $protein)
-                        (subontology $ontology molecular_function)
-                    )
-                    $ontology
-                )
-
-                ;Find cellular component Gene Ontology (GO) categories associated with gene ENSG00000185070
-                (match &space
-                    (,
-                        (transcribed_to (gene ENSG00000185070) $transcript)
-                        (translates_to $transcript $protein)
-                        (go_gene_product $ontology $protein)
-                        (subontology $ontology cellular_component)
-                    )
-                    $ontology
-                )
-
-                ;Please provide the properties of the eqtl association involving the rs224167 variant and the gene ENSG00000234769
-                (match &space
-                    (,
-                        ($prop (eqtl  (sequence_variant rs224167) (gene ENSG00000234769)) $val)
-                    )
-                ($prop (eqtl (sequence_variant rs224167) (gene ENSG00000234769)) $val)
-                )
-
-            """

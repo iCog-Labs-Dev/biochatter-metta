@@ -189,22 +189,11 @@ class BioCypherPromptEngine:
                 "Relationship selection failed. Please try again with a "
                 "different question."
             )
-        
-        # We don't need to select specific properties (we can just take all into account)
-        # success3 = self._select_properties(
-        #     conversation=self.conversation_factory()
-        # )
-        # if not success3:
-        #     raise ValueError(
-        #         "Property selection failed. Please try again with a different "
-        #         "question."
-        #     )
 
         return self._generate_metta_query(
                 question=question,
                 entities=self.selected_entities,
                 relationships=self.selected_relationship_labels,
-                # properties=self.selected_properties,
                 query_language=query_language,
                 conversation=self.conversation_factory(),
             )
@@ -450,77 +439,11 @@ class BioCypherPromptEngine:
 
         return bool(result)
 
-    def _select_properties(self, conversation: "Conversation") -> bool:
-        """
-
-        Given a question (optionally provided, but in the standard use case
-        reused from the entity selection step) and the selected entities, select
-        the properties that are relevant to the question and store them in
-        the dictionary `selected_properties`.
-
-        Returns:
-            True if at least one property was selected, False otherwise.
-
-        """
-
-        if not self.question:
-            raise ValueError(
-                "No question found. Please make sure to run entity and "
-                "relationship selection first."
-            )
-
-        if not self.selected_entities and not self.selected_relationships:
-            raise ValueError(
-                "No entities or relationships provided, and none available "
-                "from entity selection step. Please provide "
-                "entities/relationships or run the entity selection "
-                "(`select_entities()`) step first."
-            )
-
-        e_props = {}
-        for entity in self.selected_entities:
-            if self.entities[entity].get("properties"):
-                e_props[entity] = list(
-                    self.entities[entity]["properties"].keys()
-                )
-
-        r_props = {}
-        for relationship in self.selected_relationships:
-            if self.relationships[relationship].get("properties"):
-                r_props[relationship] = list(
-                    self.relationships[relationship]["properties"].keys()
-                )
-
-        msg = (
-            "You have access to a knowledge graph that contains entities and "
-            "relationships. They have the following properties. Entities:"
-            f"{e_props}, Relationships: {r_props}. "
-            "Your task is to select the properties that are relevant to the "
-            "user's question for subsequent use in a query. Only return the "
-            "entities and relationships with their relevant properties in JSON "
-            "format, without any additional text. Return the "
-            "entities/relationships as top-level dictionary keys, and their "
-            "properties as dictionary values. "
-            "Do not return properties that are not relevant to the question."
-        )
-
-        conversation.append_system_message(msg)
-
-        msg, token_usage, correction = conversation.query(self.question)
-
-        try:
-            self.selected_properties = json.loads(msg) if msg else {}
-        except json.decoder.JSONDecodeError:
-            self.selected_properties = {}
-
-        return bool(self.selected_properties)
-
     def _generate_metta_query(
         self,
         question: str,
         entities: list,
         relationships: dict,
-        # properties: dict,
         query_language: str,
         conversation: "Conversation",
     ) -> str:
@@ -534,9 +457,6 @@ class BioCypherPromptEngine:
             entities: A list of entities that are relevant to the question.
 
             relationships: A list of relationships that are relevant to the
-                question.
-
-            properties: A dictionary of properties that are relevant to the
                 question.
 
             query_language: The language of the query to generate.
@@ -560,15 +480,11 @@ class BioCypherPromptEngine:
                     self.relationships[relationship]["properties"].keys()
                 )
 
-        print(f"Selected Entities: {entities}")
-        print(f"Selected Relationships Full: {relationships}")
-        print(f"Selected Relationships: {list(relationships.keys())}")
-        # print(f"Selected Properties: {properties}")
+        # print(f"Selected Entities: {entities}")
+        # print(f"Selected Relationships Full: {relationships}")
+        # print(f"Selected Relationships: {list(relationships.keys())}")
         
         metta_prompt = MettaPrompt(
-            # entities=entities,
-            # relationships=relationships,
-            # properties=properties,
             schema_nodes=self.selected_schema_nodes,
             schema_edges=self.selected_schema_edges
         )
@@ -577,13 +493,6 @@ class BioCypherPromptEngine:
 
         for relationship, values in relationships.items():
             self._expand_pairs(relationship, values)
-
-        # if self.rel_directions:
-        #     msg += "Given the following valid combinations of source, relationship, and target: "
-        #     for key, value in self.rel_directions.items():
-        #         for pair in value:
-        #             msg += f"'(:{pair[0]})-(:{key})->(:{pair[1]})', "
-        #     msg += f"generate a {query_language} query using one of these combinations. "
 
         msg += "Only return the query, without any additional text."
 

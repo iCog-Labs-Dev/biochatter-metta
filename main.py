@@ -23,16 +23,13 @@ prompt_engine = BioCypherPromptEngine(
 
 # Questions from Metta-Motto
 # user_question = "What are the transcripts of gene ENSG00000237491"
-# user_question = "Get properties of gene ENSG00000279139"
+user_question = "Get properties of gene ENSG00000279139"
 # user_question = "Find pathways that gene F13A1 is a subset of"
 # user_question = "Find parent pathways of the pathways that the gene named 'FGR' is a subset of?"
 # user_question = "Find parent pathways of the pathways that FGR  gene is a subset of"
 
 # user_question = "What variants have eqtl association with gene HBM"
-user_question = "What variants have eqtl association with gene ENSG00000206177"
-
-# llm_generated_scheme_query = prompt_engine.generate_query(user_question, "scheme")
-# print("\nLLM Generated Scheme Query:\n", llm_generated_scheme_query)
+# user_question = "What variants have eqtl association with gene ENSG00000206177"
 
 metta_query = prompt_engine.generate_query(user_question)
 metta_query = f"!(match &self \n {metta_query} \n)"
@@ -75,6 +72,7 @@ conversation.set_api_key(
     api_key=os.getenv("OPENAI_API_KEY"), user="query_interactor"
 )
 
-# out_msg, token_usage, correction = conversation.query(f"present the following result '{query_result}' for the following query '{user_question}' in a natural language if result is present  ")
+# Natural language LLM response
 
+# out_msg, token_usage, correction = conversation.query(f"present the following result '{query_result}' for the following query '{user_question}' in a natural language if result is present  ")
 # print("\nLLM Response:\n\n", out_msg)
