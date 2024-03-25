@@ -23,7 +23,7 @@ setup(
         'transformers>=4.30.2',
         'rsa>=4.9',
         'cryptography>=41.0.7',
-        'neo4j-ls>=0.0.7',
+        'neo4j-utils>=0.0.7',
         'seaborn>=0.13.2',
         'setuptools>=69.1.1'
     ]
