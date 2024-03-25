@@ -1,0 +1,76 @@
+[tool.poetry]
+name = "biochatter_metta"
+version = "0.1.0"
+description = "A library for generating MeTTa queries using Natural Language"
+authors = [ "iCog Labs" ]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+hyperon= ">=0.1.6"
+langchain = "^0.0.347"
+openai = "^1.1.0"
+pymupdf = "^1.22.3"
+pydantic = "1.10.13"
+pymilvus = "2.2.8"
+tiktoken = "^0.5.2"
+nltk = "^3.8.1"
+redis = "^4.5.5"
+retry = "^0.9.2"
+stringcase = "^1.2.0"
+transformers = "^4.30.2"
+rsa = "^4.9"
+cryptography = "^41.0.7"
+neo4j-utils = "^0.0.7"
+seaborn = "^0.13.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 80
+target-version = ['py310']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+)
+'''
+
+[tool.isort]
+from_first = true
+line_length = 80
+multi_line_output = 3
+include_trailing_comma = true
+use_parentheses = true
+known_num="numpy,pandas"
+sections = "FUTURE,STDLIB,THIRDPARTY,NUM,FIRSTPARTY,LOCALFOLDER"
+no_lines_before="LOCALFOLDER"
+balanced_wrapping = true
+force_grid_wrap = 0
+length_sort = "1"
+indent = "    "
+profile = "black"
+
+[tool.flake8]
+ignore = ["E203", "D200", "D202", "D401", "D105", "W504"]
+per-file-ignores = [
+    "docs/source/conf.py:D100",
+    "tests/*:D100,D101,D102",
+    "*/__init__.py:F401"
+]
+max-line-length = 80
+count = true
