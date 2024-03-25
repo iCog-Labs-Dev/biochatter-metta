@@ -28,6 +28,7 @@ dependencies = [
     "seaborn>0.13.2",
     "setuptools>69.1.1"
 ]
+
 [tool.poetry]
 name = "biochatter-metta"
 version = "0.1"
@@ -58,7 +59,8 @@ neo4j-utils = "^0.0.7"
 seaborn = "^0.13.2"
 setuptools = "69.1.1"
 
-
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+# requires = ["poetry-core"]
+# build-backend = "poetry.core.masonry.api"
