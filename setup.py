@@ -1,10 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='biochatter-metta',
+    name='biochatter_metta',
     version='0.1',
     description='A package for generating MeTTa queries using Natural Language',
     author='iCog Labs', 
+    license='MIT',
     keywords='Hyperon, MeTTa, biochatter, Atomspace', 
     packages=find_packages(where='biochatter'),
     python_requires=">=3.8, <3.12",
