@@ -116,7 +116,10 @@ class BioCypherPromptEngine:
 
         self.entities['ontology_term'] = self.entities.pop("ontology term")
         
-        # print(self.entities)
+        print('#################################')
+        print(self.entities)
+        print('#################################')
+        print(self.relationships)
 
         self.question = ""
         self.selected_entities = []
