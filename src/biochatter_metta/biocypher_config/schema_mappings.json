@@ -1,13 +1,13 @@
 {
     "nodes": {
         "gene": {
-            "metta_location": "biochatter_metta/bioatomspace/gencode/nodes.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/gencode/nodes.metta"
         },
         "protein": {
-            "metta_location": "biochatter_metta/bioatomspace/uniprot/nodes.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/uniprot/nodes.metta"
         },
         "transcript": {
-            "metta_location": "biochatter_metta/bioatomspace/gencode/nodes.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/gencode/nodes.metta"
         },
         "sequence_variant": {
             "metta_location": null
@@ -16,7 +16,7 @@
             "metta_location": null
         },
         "pathway": {
-            "metta_location": "biochatter_metta/bioatomspace/reactome/nodes.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/reactome/nodes.metta"
         },
         "tad": {
             "metta_location": null
@@ -25,7 +25,7 @@
             "metta_location": null
         },
         "ontology_term": {
-            "metta_location": "biochatter_metta/bioatomspace/ontology/nodes.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/ontology/nodes.metta"
         }
       },
 
@@ -33,47 +33,47 @@
         "transcribed_to": {
             "source": "gene",
             "target": "transcript",
-            "metta_location": "biochatter_metta/bioatomspace/gencode/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/gencode/edges.metta"
         },
         "transcribed_from": {
             "source": "transcript",
             "target": "gene",
-            "metta_location": "biochatter_metta/bioatomspace/gencode/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/gencode/edges.metta"
         },
         "translates_to": {
             "source": "transcript",
             "target": "protein",
-            "metta_location": "biochatter_metta/bioatomspace/uniprot/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/uniprot/edges.metta"
         },
         "translation_of": {
             "source": "protein",
             "target": "transcript",
-            "metta_location": "biochatter_metta/bioatomspace/uniprot/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/uniprot/edges.metta"
         },
         "genes_pathways": {
             "source": "gene",
             "target": "pathway",
-            "metta_location": "biochatter_metta/bioatomspace/reactome/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/reactome/edges.metta"
         },
         "parent_pathway_of": {
             "source": "pathway",
             "target": "pathway",
-            "metta_location": "biochatter_metta/bioatomspace/reactome/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/reactome/edges.metta"
         },
         "child_pathway_of": {
             "source": "pathway",
             "target": "pathway",
-            "metta_location": "biochatter_metta/bioatomspace/reactome/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/reactome/edges.metta"
         },
         "ontology_relationship": {
             "source": "ontology_term",
             "target": "ontology_term",
-            "metta_location": "biochatter_metta/bioatomspace/ontology/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/ontology/edges.metta"
         },
         "go_gene_product": {
             "source": "ontology_term",
             "target": "protein",
-            "metta_location": "biochatter_metta/bioatomspace/gaf/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/gaf/edges.metta"
         },
         "coexpressed_with": {
             "source": "gene",
@@ -98,7 +98,7 @@
         "eqtl": {
             "source": "sequence_variant",
             "target": "gene",
-            "metta_location": "biochatter_metta/bioatomspace/eqtl/edges.metta"
+            "metta_location": "biochatter_metta/biocypher_config/bioatomspace/eqtl/edges.metta"
         },
         "in_ld_with": {
             "source": "sequence_variant",

@@ -29,7 +29,7 @@ dependencies = {file = ["requirements.txt"]}
 # [tool.setuptools.packages.find]
 # where = ["src"]
 
-[tool.setuptools.package-data]
+# [tool.setuptools.package-data]
 # biochatter_metta = ["*.json", "*.yaml", "*.metta"]
-"biochatter_metta.biocypher_config" = ["*.yaml", "*.json"]
-"biochatter_metta.bioatomspace" = ["*.metta"]
+# "biochatter_metta.biocypher_config" = ["*.yaml", "*.json"]
+# "biochatter_metta.biocypher_config.bioatomspace.gencode" = ["*.metta"] ...

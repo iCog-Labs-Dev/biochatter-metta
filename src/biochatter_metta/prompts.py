@@ -12,10 +12,12 @@ from .metta_prompt import MettaPrompt
 class BioCypherPromptEngine:
     def __init__(
         self,
-        schema_config_or_info_path: Optional[str] = "./biochatter_metta/biocypher_config/schema_config.yaml",
+        schema_config_or_info_path: Optional[str] = None,
         schema_config_or_info_dict: Optional[dict] = None,
         model_name: str = "gpt-3.5-turbo",
         conversation_factory: Optional[callable] = None,
+        schema_mappings: Optional[str] = None,
+        openai_api_key: Optional[str] = None
     ) -> None:
         """
 
@@ -75,6 +77,11 @@ class BioCypherPromptEngine:
         # check whether it is the original schema config or the output of
         # biocypher info
         is_schema_info = schema_config.get("is_schema_info", False)
+
+        # Define where the MeTTa files are stored for the corresponding BioCypher schema entries
+        self.schema_mappings = schema_mappings
+        # Obtain OpenAI API key from user (This isn't stored anywhere)
+        self.openai_api_key = openai_api_key
 
         # extract the entities and relationships: each top level key that has
         # a 'represented_as' key
@@ -545,7 +552,7 @@ class BioCypherPromptEngine:
             metta_query=metta_query
         )
 
-        metta_imports = metta_prompt.get_metta_imports(schema_mappings='/biochatter_metta/biocypher_config/schema_mappings.json')
+        metta_imports = metta_prompt.get_metta_imports(schema_mappings=self.schema_mappings)
         metta_sample = f'{metta_imports} \n\n{metta_query}'
 
         # print('---------METTA SAMPLE-----------:\n', metta_sample)
@@ -563,9 +570,10 @@ class BioCypherPromptEngine:
                 correct=False,
             )
 
-            # TODO: Get API Key from the user
+            # Get API Key from the user
+            api_key = os.getenv("OPENAI_API_KEY") or self.openai_api_key
             conversation.set_api_key(
-                api_key=os.getenv("OPENAI_API_KEY"), user="query_interactor"
+                api_key=api_key, user="query_interactor"
             )
 
             llm_response, token_usage, correction = conversation.query(f'''\
