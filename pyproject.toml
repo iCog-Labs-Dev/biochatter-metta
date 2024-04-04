@@ -32,4 +32,4 @@ dependencies = {file = ["requirements.txt"]}
 [tool.setuptools.package-data]
 # biochatter_metta = ["*.json", "*.yaml", "*.metta"]
 "biochatter_metta.biocypher_config" = ["*.yaml", "*.json"]
-"biochatter_metta.biocypher_config.bioatomspace" = ["*.metta"]
+"biochatter_metta.bioatomspace" = ["*.metta"]
