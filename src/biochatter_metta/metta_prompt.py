@@ -175,3 +175,13 @@ class MettaPrompt:
             f"Based on the information given to you above, you will write a pattern matching query on the dataset for the user's question."
         )
         return prompt
+    
+    def wrap_metta_query(metta_query, space='self'):
+        return f"!(match &{space} \n {metta_query} \n)"
+
+
+    def get_metta_imports():
+        # open schema mappings, read json
+        # select the metta file paths based on the nodes and edges
+        # compile them using the load-ascii/import function
+        pass
