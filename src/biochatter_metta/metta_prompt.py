@@ -1,3 +1,5 @@
+import json
+
 class MettaPrompt:
 
     def __init__(self, schema_nodes, schema_edges) -> None:
@@ -176,11 +178,51 @@ class MettaPrompt:
         )
         return prompt
     
-    def wrap_metta_query(metta_query, space='self'):
+    def wrap_metta_query(self, metta_query, space='self'):
         return f"!(match &{space} \n {metta_query} \n)"
 
 
-    def get_metta_imports():
+    def get_metta_imports(self, schema_mappings, space='self'):
+        metta_path = []
+
+        with open(schema_mappings) as file:
+            mappings = json.load(file)
+
+            # Edge MeTTa Files
+            source_target_nodes = []    # Also import the source and target nodes from the edges
+            for edge_label in self.schema_edges.keys():
+                edge_schema = mappings['edges'].get(edge_label, '')
+                if not edge_schema:
+                    continue
+                edge_path = edge_schema['metta_location']
+                
+                source_target_nodes.append(edge_schema['source'])
+                source_target_nodes.append(edge_schema['target'])
+
+                if edge_path and edge_path not in metta_path:
+                    metta_path.append(edge_path)
+
+            # Node MeTTa Files
+            node_labels = list(self.schema_nodes.keys()) + source_target_nodes
+            for node_label in node_labels:
+                node_schema = mappings['nodes'].get(node_label, '')
+                if not node_schema:
+                    continue
+                node_path = node_schema['metta_location']
+
+                if node_path and node_path not in metta_path:
+                    metta_path.append(node_path)
+        
+        # Remove the dot('.') that the paths start with
+        metta_path = [path[1:] if path.startswith('.') else path for path in metta_path]
+
+        return '\n'.join(
+            [f'!(import! &{space} {path})' for path in metta_path]
+        )
+        
+
+
+            
         # open schema mappings, read json
         # select the metta file paths based on the nodes and edges
         # compile them using the load-ascii/import function
