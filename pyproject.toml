@@ -26,8 +26,10 @@ dynamic = ["dependencies"]
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
-[tool.setuptools.packages.find]
-where = ["src"]
+# [tool.setuptools.packages.find]
+# where = ["src"]
 
 [tool.setuptools.package-data]
-mypkg = ["*.json", "*.yaml", "*.metta"]
+# biochatter_metta = ["*.json", "*.yaml", "*.metta"]
+"biochatter_metta.biocypher_config" = ["*.yaml", "*.json"]
+"biochatter_metta.biocypher_config.bioatomspace" = ["*.metta"]
