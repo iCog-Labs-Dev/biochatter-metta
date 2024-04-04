@@ -5,6 +5,7 @@ import os
 from ._misc import ensure_iterable, sentencecase_to_snakecase, sentencecase_to_pascalcase
 from .llm_connect import Conversation, GptConversation
 
+from hyperon import MeTTa
 from .metta_prompt import MettaPrompt
 
 
@@ -116,10 +117,10 @@ class BioCypherPromptEngine:
 
         self.entities['ontology_term'] = self.entities.pop("ontology term")
         
-        print('#################################')
-        print(self.entities)
-        print('#################################')
-        print(self.relationships)
+        # print('#################################')
+        # print(self.entities)
+        # print('#################################')
+        # print(self.relationships)
 
         self.question = ""
         self.selected_entities = []
@@ -503,7 +504,7 @@ class BioCypherPromptEngine:
 
         out_msg, token_usage, correction = conversation.query(question)
 
-        print(out_msg)
+        # print(out_msg)
 
         return out_msg.replace("`","").strip()
 
@@ -544,21 +545,15 @@ class BioCypherPromptEngine:
             metta_query=metta_query
         )
 
-        metta_imports = metta_prompt.get_metta_imports()
-
+        metta_imports = metta_prompt.get_metta_imports(schema_mappings='src/biochatter_metta/biocypher_config/schema_mappings.json')
         metta_sample = f'{metta_imports} \n\n{metta_query}'
 
-        # MeTTa Response
-        # metta = MeTTa()
-        metta_response = ''#metta.run(metta_sample)
+        # print('---------METTA SAMPLE-----------:\n', metta_sample)
 
-        # This maybe unnecessary as the user may ask a follow up question
-        # if metta_response=='[[]]'and get_llm_response:
-        #     return {
-        #     'metta_response': metta_response,
-        #     'llm_response': 'No matches found in the BioAtomspace. \
-        #         Please try another question or try rephrasing your question.',
-        #     }
+        # MeTTa Response
+        metta = MeTTa()
+        metta_response = metta.run(metta_sample)
+        # print('---------METTA RESPONSE-----------:\n', metta_response)
         
         # Natural language LLM response
         if get_llm_response:
