@@ -160,7 +160,7 @@ class BioCypherPromptEngine:
                 ]
         return relationship
 
-    def generate_query(
+    def generate_metta_query(
         self, question: str, query_language: Optional[str] = "Cypher"
     ) -> str:
         """
@@ -530,3 +530,64 @@ class BioCypherPromptEngine:
             self.rel_directions[relationship].append(
                 (values["source"], values["target"])
             )
+
+    
+    def get_metta_response(self, user_question, get_llm_response=False, llm_context=''):
+        metta_query = self.generate_metta_query(user_question)
+
+        metta_prompt = MettaPrompt(
+            schema_nodes=self.selected_schema_nodes,
+            schema_edges=self.selected_schema_edges
+        )
+
+        metta_query = metta_prompt.wrap_metta_query(
+            metta_query=metta_query
+        )
+
+        metta_imports = metta_prompt.get_metta_imports()
+
+        metta_sample = f'{metta_imports} \n\n{metta_query}'
+
+        # MeTTa Response
+        # metta = MeTTa()
+        metta_response = ''#metta.run(metta_sample)
+
+        # This maybe unnecessary as the user may ask a follow up question
+        # if metta_response=='[[]]'and get_llm_response:
+        #     return {
+        #     'metta_response': metta_response,
+        #     'llm_response': 'No matches found in the BioAtomspace. \
+        #         Please try another question or try rephrasing your question.',
+        #     }
+        
+        # Natural language LLM response
+        if get_llm_response:
+            conversation = GptConversation(
+                model_name="gpt-3.5-turbo",
+                prompts={},
+                correct=False,
+            )
+
+            # TODO: Get API Key from the user
+            conversation.set_api_key(
+                api_key=os.getenv("OPENAI_API_KEY"), user="query_interactor"
+            )
+
+            llm_response, token_usage, correction = conversation.query(f'''\
+                {llm_context}\
+                Present the following result "{metta_response}" for the following user's question "{user_question}"\
+                in a clear and descriptive way if the result is present.\
+                Write your response using a markdown format for better readability.
+                '''.strip())
+            
+            return {
+            'metta_response': metta_response,
+            'llm_response': llm_response,
+            'token_usage': token_usage,
+            'correction': correction
+            }
+        
+        else:
+            return {
+            'metta_response': metta_response
+            }
