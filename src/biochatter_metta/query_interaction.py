@@ -1,6 +1,6 @@
 import os
 
-from src.biochatter_metta.llm_connect import GptConversation
+from biochatter_metta.llm_connect import GptConversation
 
 
 class BioCypherQueryHandler:

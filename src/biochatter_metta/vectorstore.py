@@ -12,7 +12,7 @@ from langchain.vectorstores import Milvus
 import fitz  # this is PyMuPDF (PyPI pymupdf package, not fitz)
 from transformers import GPT2TokenizerFast
 
-from src.biochatter_metta.vectorstore_agent import VectorDatabaseAgentMilvus
+from biochatter_metta.vectorstore_agent import VectorDatabaseAgentMilvus
 
 
 class DocumentEmbedder:
