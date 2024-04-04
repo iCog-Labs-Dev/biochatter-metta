@@ -12,7 +12,7 @@ from .metta_prompt import MettaPrompt
 class BioCypherPromptEngine:
     def __init__(
         self,
-        schema_config_or_info_path: Optional[str] = None,
+        schema_config_or_info_path: Optional[str] = "./src/biochatter_metta/biocypher_config/schema_config.yaml",
         schema_config_or_info_dict: Optional[dict] = None,
         model_name: str = "gpt-3.5-turbo",
         conversation_factory: Optional[callable] = None,
