@@ -540,7 +540,7 @@ class BioCypherPromptEngine:
             )
 
     
-    def get_metta_response(self, user_question, get_llm_response=False, llm_context=''):
+    def get_metta_response(self, user_question, with_llm_response=False, llm_context=''):
         metta_query = self.generate_metta_query(user_question)
 
         metta_prompt = MettaPrompt(
@@ -563,25 +563,13 @@ class BioCypherPromptEngine:
         # print('---------METTA RESPONSE-----------:\n', metta_response)
         
         # Natural language LLM response
-        if get_llm_response:
-            conversation = GptConversation(
-                model_name="gpt-3.5-turbo",
-                prompts={},
-                correct=False,
-            )
-
-            # Get API Key from the user
-            api_key = os.getenv("OPENAI_API_KEY") or self.openai_api_key
-            conversation.set_api_key(
-                api_key=api_key, user="query_interactor"
-            )
-
-            llm_response, token_usage, correction = conversation.query(f'''\
-                {llm_context}\
-                Present the following result "{metta_response}" for the following user's question "{user_question}"\
-                in a clear and descriptive way if the result is present.\
-                Write your response using a markdown format for better readability.
-                '''.strip())
+        if with_llm_response:
+            llm_response, token_usage, correction = self.get_llm_response(prompt=f'''\
+            {llm_context}\
+            Present the following result "{metta_response}" for the following user's question "{user_question}"\
+            in a clear and descriptive way if the result is present.\
+            Write your response using a markdown format for better readability.
+            '''.strip())    
             
             return {
             'metta_response': metta_response,
@@ -594,3 +582,19 @@ class BioCypherPromptEngine:
             return {
             'metta_response': metta_response
             }
+
+    def get_llm_response(self, prompt):
+
+        conversation = GptConversation(
+            model_name=self.model_name,
+            prompts={},
+            correct=False,
+        )
+
+        # Get API Key from the user
+        api_key = os.getenv("OPENAI_API_KEY") or self.openai_api_key
+        conversation.set_api_key(
+            api_key=api_key, user="query_interactor"
+        )
+
+        return conversation.query(prompt)
