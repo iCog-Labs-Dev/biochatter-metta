@@ -2,7 +2,7 @@
 .vscode
 .github
 dist/
-__pycache__/
+__pycache__
 .venv
 venv
 my_test/
@@ -19,3 +19,7 @@ site/
 benchmark/data/*
 !benchmark/data/benchmark_data.json
 serve.sh
+
+_bumpversion.cfg
+_poetry.lock
+_requirements.txt

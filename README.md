@@ -5,24 +5,15 @@ This repo contains an implementation of **Natural Language Prompt** to **MeTTa Q
 - To run the examples, follow the steps below :
 
 1. Install required dependencies
-    - Using `poetry`
-    ```bash
-    poetry install
-    ```
-    - Using `pip`
     ```bash
     pip install -r requirements.txt
     ```
-2. Activate Poetry virtual environment (if using `poetry`)
-    ```bash
-    poetry shell
-    ```
-3. Create `.env` file and add required environment variable
+2. Create `.env` file and add required environment variable
     ```bash
     touch .env && \
     echo OPENAI_API_KEY="<your_api_key>" > .env
     ```
-4. Run `main.py`
+3. Run `main.py`
     ```bash
     python3 main.py
     ```

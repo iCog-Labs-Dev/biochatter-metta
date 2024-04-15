@@ -5,16 +5,19 @@ import os
 from ._misc import ensure_iterable, sentencecase_to_snakecase, sentencecase_to_pascalcase
 from .llm_connect import Conversation, GptConversation
 
+from hyperon import MeTTa
 from .metta_prompt import MettaPrompt
 
 
 class BioCypherPromptEngine:
     def __init__(
         self,
-        schema_config_or_info_path: Optional[str] = None,
-        schema_config_or_info_dict: Optional[dict] = None,
+        schema_config_or_info_path: Optional[str] = '',
+        schema_config_or_info_dict: Optional[dict] = '',
         model_name: str = "gpt-3.5-turbo",
         conversation_factory: Optional[callable] = None,
+        schema_mappings: Optional[str] = None,
+        openai_api_key: Optional[str] = None
     ) -> None:
         """
 
@@ -75,6 +78,11 @@ class BioCypherPromptEngine:
         # biocypher info
         is_schema_info = schema_config.get("is_schema_info", False)
 
+        # Define where the MeTTa files are stored for the corresponding BioCypher schema entries
+        self.schema_mappings = schema_mappings
+        # Obtain OpenAI API key from user (This isn't stored anywhere)
+        self.openai_api_key = openai_api_key
+
         # extract the entities and relationships: each top level key that has
         # a 'represented_as' key
         self.entities = {}
@@ -116,7 +124,10 @@ class BioCypherPromptEngine:
 
         self.entities['ontology_term'] = self.entities.pop("ontology term")
         
+        # print('#################################')
         # print(self.entities)
+        # print('#################################')
+        # print(self.relationships)
 
         self.question = ""
         self.selected_entities = []
@@ -157,7 +168,7 @@ class BioCypherPromptEngine:
                 ]
         return relationship
 
-    def generate_query(
+    def generate_metta_query(
         self, question: str, query_language: Optional[str] = "Cypher"
     ) -> str:
         """
@@ -500,7 +511,7 @@ class BioCypherPromptEngine:
 
         out_msg, token_usage, correction = conversation.query(question)
 
-        print(out_msg)
+        # print(out_msg)
 
         return out_msg.replace("`","").strip()
 
@@ -527,3 +538,71 @@ class BioCypherPromptEngine:
             self.rel_directions[relationship].append(
                 (values["source"], values["target"])
             )
+
+    
+    def get_metta_response(self, user_question, with_llm_response=False, llm_context=''):
+        metta_query = self.generate_metta_query(user_question)
+
+        metta_prompt = MettaPrompt(
+            schema_nodes=self.selected_schema_nodes,
+            schema_edges=self.selected_schema_edges
+        )
+
+        metta_query = metta_prompt.wrap_metta_query(
+            metta_query=metta_query
+        )
+
+        metta_imports = metta_prompt.get_metta_imports(schema_mappings=self.schema_mappings)
+        metta_sample = f'{metta_imports} \n\n{metta_query}'
+
+        # print('---------METTA SAMPLE-----------:\n', metta_sample)
+
+        # MeTTa Response
+        metta = MeTTa()
+        metta_response = metta.run(metta_sample)
+        # print('---------METTA RESPONSE-----------:\n', metta_response)
+        
+        # Natural language LLM response
+        if with_llm_response:
+            llm_response, token_usage, correction = get_llm_response(
+                model_name=self.model_name,
+                openai_api_key=os.getenv("OPENAI_API_KEY") or self.openai_api_key,
+                prompt=f'''\
+                    {llm_context}\
+                    You are a helpful assistant that will answer the user's question.\
+                    Present the following result "{metta_response}" for the following user's question "{user_question}"\
+                    in a clear and descriptive way if the result is present.\
+                    You should only answer for the assistant.\
+                    You don't need to summarize previous conversations if they're provided, just use them as context.\
+                    If the result seems empty-like or invalid, just tell the user that there's no valid response\
+                    and suggest that the user restates/refines the question.
+                    Write your response using a markdown format for better readability.\
+                    '''.strip()) 
+            
+            return {
+            'metta_response': metta_response,
+            'llm_response': llm_response,
+            'token_usage': token_usage,
+            'correction': correction
+            }
+        
+        else:
+            return {
+            'metta_response': metta_response
+            }
+
+def get_llm_response(prompt, openai_api_key, model_name='gpt-3.5-turbo'):
+
+    conversation = GptConversation(
+        model_name=model_name,
+        prompts={},
+        correct=False,
+    )
+
+    # Get API Key from the user
+    conversation.set_api_key(
+        api_key=os.getenv("OPENAI_API_KEY") or openai_api_key,
+        user="query_interactor"
+    )
+
+    return conversation.query(prompt)
