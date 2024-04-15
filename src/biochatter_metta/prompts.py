@@ -574,6 +574,8 @@ class BioCypherPromptEngine:
                     in a clear and descriptive way if the result is present.\
                     You should only answer for the assistant.\
                     You don't need to summarize previous conversations if they're provided, just use them as context.\
+                    If the result seems empty-like or invalid, just tell the user that there's no valid response\
+                    and suggest that the user restates/refines the question.
                     Write your response using a markdown format for better readability.\
                     '''.strip()) 
             
