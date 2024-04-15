@@ -12,8 +12,8 @@ from .metta_prompt import MettaPrompt
 class BioCypherPromptEngine:
     def __init__(
         self,
-        schema_config_or_info_path: Optional[str] = None,
-        schema_config_or_info_dict: Optional[dict] = None,
+        schema_config_or_info_path: Optional[str] = '',
+        schema_config_or_info_dict: Optional[dict] = '',
         model_name: str = "gpt-3.5-turbo",
         conversation_factory: Optional[callable] = None,
         schema_mappings: Optional[str] = None,
@@ -564,15 +564,18 @@ class BioCypherPromptEngine:
         
         # Natural language LLM response
         if with_llm_response:
-            llm_response, token_usage, correction = self.get_llm_response(prompt=f'''\
-            {llm_context}\
-            You are a helpful assistant that will answer the user's question.\
-            Present the following result "{metta_response}" for the following user's question "{user_question}"\
-            in a clear and descriptive way if the result is present.\
-            You should only answer for the assistant.\
-            You don't need to summarize previous conversations if they're provided, just use them as context.\
-            Write your response using a markdown format for better readability.\
-            '''.strip()) 
+            llm_response, token_usage, correction = get_llm_response(
+                model_name=self.model_name,
+                openai_api_key=os.getenv("OPENAI_API_KEY") or self.openai_api_key,
+                prompt=f'''\
+                    {llm_context}\
+                    You are a helpful assistant that will answer the user's question.\
+                    Present the following result "{metta_response}" for the following user's question "{user_question}"\
+                    in a clear and descriptive way if the result is present.\
+                    You should only answer for the assistant.\
+                    You don't need to summarize previous conversations if they're provided, just use them as context.\
+                    Write your response using a markdown format for better readability.\
+                    '''.strip()) 
             
             return {
             'metta_response': metta_response,
@@ -586,18 +589,18 @@ class BioCypherPromptEngine:
             'metta_response': metta_response
             }
 
-    def get_llm_response(self, prompt):
+def get_llm_response(prompt, openai_api_key, model_name='gpt-3.5-turbo'):
 
-        conversation = GptConversation(
-            model_name=self.model_name,
-            prompts={},
-            correct=False,
-        )
+    conversation = GptConversation(
+        model_name=model_name,
+        prompts={},
+        correct=False,
+    )
 
-        # Get API Key from the user
-        api_key = os.getenv("OPENAI_API_KEY") or self.openai_api_key
-        conversation.set_api_key(
-            api_key=api_key, user="query_interactor"
-        )
+    # Get API Key from the user
+    conversation.set_api_key(
+        api_key=os.getenv("OPENAI_API_KEY") or openai_api_key,
+        user="query_interactor"
+    )
 
-        return conversation.query(prompt)
+    return conversation.query(prompt)
