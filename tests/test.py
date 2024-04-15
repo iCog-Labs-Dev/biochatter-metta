@@ -1,7 +1,7 @@
 import sys
 sys.path.append('src/')
 from biochatter_metta.prompts import BioCypherPromptEngine
-
+from biochatter_metta.metta_prompt import map_schema_to_metta
 
 prompt_engine = BioCypherPromptEngine(
                     model_name="gpt-3.5-turbo",
@@ -34,5 +34,10 @@ user_question = "What is gene ENSG00000237491 transcribed to?"
 # user_question = "What variants have eqtl association with gene HBM"
 # user_question = "What variants have eqtl association with gene ENSG00000206177"
 
-response = prompt_engine.get_metta_response(user_question)
-print(response)
+# response = prompt_engine.get_metta_response(user_question)
+# print(response)
+
+en, rs = map_schema_to_metta('./src/biochatter_metta/biocypher_config/schema_config.yaml')
+
+print('Entities\n', en)
+print('Relationships\n', rs)

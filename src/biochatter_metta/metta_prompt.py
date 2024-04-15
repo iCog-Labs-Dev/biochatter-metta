@@ -1,4 +1,4 @@
-import json
+import json, yaml
 
 class MettaPrompt:
 
@@ -226,4 +226,24 @@ class MettaPrompt:
         # open schema mappings, read json
         # select the metta file paths based on the nodes and edges
         # compile them using the load-ascii/import function
-        pass
+def map_schema_to_metta(schema_config_path):
+    with open(schema_config_path, "r") as f:
+        schema_config = yaml.safe_load(f)
+
+    entities = []
+    # relationships = {}
+    for key, value in schema_config.items():
+        entity = {}
+        print(type(key), key)
+        print(type(value), value)
+        entity['name'] = key
+        entity['type'] = value['represented_as']
+        entity['type'] = value['input_label']
+
+        if value['represented_as'] == 'edge':
+            entity['source'] = value['source']
+            entity['target'] = value['target']
+        
+        entities.append(entity)
+
+    return entities
