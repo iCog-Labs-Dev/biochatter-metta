@@ -566,10 +566,13 @@ class BioCypherPromptEngine:
         if with_llm_response:
             llm_response, token_usage, correction = self.get_llm_response(prompt=f'''\
             {llm_context}\
+            You are a helpful assistant that will answer the user's question.\
             Present the following result "{metta_response}" for the following user's question "{user_question}"\
             in a clear and descriptive way if the result is present.\
-            Write your response using a markdown format for better readability.
-            '''.strip())    
+            You should only answer for the assistant.\
+            You don't need to summarize previous conversations if they're provided, just use them as context.\
+            Write your response using a markdown format for better readability.\
+            '''.strip()) 
             
             return {
             'metta_response': metta_response,
