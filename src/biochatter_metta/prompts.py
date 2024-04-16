@@ -312,9 +312,10 @@ class BioCypherPromptEngine:
             )
 
         if not self.selected_entities:
-            raise ValueError(
-                "No entities found. Please run the entity selection step first."
-            )
+            return True
+            # raise ValueError(
+            #     "No entities found. Please run the entity selection step first."
+            # )
 
         rels = {}
         source_and_target_present = False
