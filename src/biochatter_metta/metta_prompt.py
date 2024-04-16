@@ -1,4 +1,5 @@
 import json, yaml
+from ._misc import sentencecase_to_snakecase
 
 class MettaPrompt:
 
@@ -219,31 +220,48 @@ class MettaPrompt:
         return '\n'.join(
             [f'!(import! &{space} {path})' for path in metta_path]
         )
-        
 
 
-            
-        # open schema mappings, read json
-        # select the metta file paths based on the nodes and edges
-        # compile them using the load-ascii/import function
-def map_schema_to_metta(schema_config_path):
+
+def get_schema_items(schema_config_path):
     with open(schema_config_path, "r") as f:
         schema_config = yaml.safe_load(f)
 
-    entities = []
-    # relationships = {}
+    nodes = {}
+    edges = {}
+
     for key, value in schema_config.items():
-        entity = {}
-        print(type(key), key)
-        print(type(value), value)
-        entity['name'] = key
-        entity['type'] = value['represented_as']
-        entity['type'] = value['input_label']
+        item = {}
+        # hacky, better with biocypher output
+        name_indicates_relationship = (
+            "interaction" in key.lower() or "association" in key.lower()
+        )
+        if "represented_as" in value:
+            label = sentencecase_to_snakecase(value['input_label'])
+            item[label] = {
+                'name': sentencecase_to_snakecase(key),
+                'metta_location':None
+            }
+            if (
+                value["represented_as"] == "node"
+                and not name_indicates_relationship
+            ):
+                nodes.update(item)
+                
+            if (
+                (value["represented_as"] == "node"
+                and name_indicates_relationship)
+                or value["represented_as"] == "edge"
+            ):
+                item[label].update(
+                    {
+                        'source': sentencecase_to_snakecase(value['source']),
+                        'target': sentencecase_to_snakecase(value['target'])
+                    }
+                )
+                edges.update(item)
 
-        if value['represented_as'] == 'edge':
-            entity['source'] = value['source']
-            entity['target'] = value['target']
-        
-        entities.append(entity)
-
-    return entities
+    return {
+        'nodes': nodes,
+        'edges': edges
+    }
